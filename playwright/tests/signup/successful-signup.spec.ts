@@ -11,7 +11,7 @@ test.describe('Sign Up - Happy Path', () => {
   const testUser = {
     firstName: 'John',
     lastName: 'Doe',
-    username: `johndoe${Date.now()}`, // Unique username to avoid duplicates
+    username: `johndoe${Date.now()}`, 
     password: 'SecurePass123!'
   };
 
@@ -20,7 +20,6 @@ test.describe('Sign Up - Happy Path', () => {
   });
 
   test('1.1. User successfully signs up with valid credentials', async ({ page }) => {
-    // Step 1: Navigate to signup page
     await page.goto('https://realworldapp.netlify.app/signup');
     
     // Verify: signup page is displayed with all form fields
@@ -32,7 +31,6 @@ test.describe('Sign Up - Happy Path', () => {
     await expect(signupPage.signUpButton).toBeVisible();
 
     // Step 2: Verify form structure and required field indicators
-    // Check that all form fields are present
     await expect(signupPage.firstNameInput).toBeAttached();
     await expect(signupPage.lastNameInput).toBeAttached();
     await expect(signupPage.usernameInput).toBeAttached();
@@ -79,16 +77,11 @@ test.describe('Sign Up - Happy Path', () => {
       testUser.password
     );
 
-    // Expect: form is submitted
-    // Wait for navigation or response after clicking submit
     await page.waitForTimeout(3000);
     
-    // Check the result - either success (redirected) or error (stayed on page)
     const currentUrl = page.url();
     console.log(`Current URL after signup: ${currentUrl}`);
     
-    // Check if we were redirected (successful signup)
-    // OR check for error messages
     const isSignupPage = currentUrl.includes('/signup');
     
     if (isSignupPage) {
@@ -141,9 +134,9 @@ test.describe('Sign Up - Happy Path', () => {
       // Write back to file
       fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2), 'utf-8');
 
-      console.log(`✅ Test user saved to ${usersFilePath}`);
+      console.log(`Test user saved to ${usersFilePath}`);
     } catch (error) {
-      console.error('❌ Failed to save test user:', error);
+      console.error(' Failed to save test user:', error);
     }
   });
 });
