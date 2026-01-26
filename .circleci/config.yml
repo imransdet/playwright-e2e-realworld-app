@@ -1,0 +1,25 @@
+version: 2.1
+jobs:
+  test:
+    docker:
+      - image: mcr.microsoft.com/playwright:v1.45.0-noble
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: yarn
+      - run:
+          name: Build app
+          command: yarn build
+      - run:
+          name: Run Playwright tests
+          command: yarn test
+      - store_artifacts:
+          path: playwright-report
+          destination: playwright-report
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test

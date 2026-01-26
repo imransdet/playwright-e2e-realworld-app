@@ -1,0 +1,30 @@
+{
+  "validUsers": [
+    {
+      "id": 1,
+      "username": "testUser",
+      "password": "password",
+      "firstName": "Test",
+      "lastName": "User",
+      "email": "test@example.com"
+    },
+    {
+      "id": 2,
+      "username": "johnDoe",
+      "password": "johnPassword123",
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john@example.com"
+    }
+  ],
+  "invalidUsers": [
+    {
+      "username": "invalidUser",
+      "password": "wrongPassword"
+    },
+    {
+      "username": "",
+      "password": ""
+    }
+  ]
+}
