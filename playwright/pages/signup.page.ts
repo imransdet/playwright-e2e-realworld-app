@@ -17,13 +17,13 @@ export class SignupPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.firstNameInput = page.locator('[data-test="signup-first-name"]');
-    this.lastNameInput = page.locator('[data-test="signup-last-name"]');
-    this.usernameInput = page.locator('[data-test="signup-username"]');
-    this.passwordInput = page.locator('[data-test="signup-password"]');
-    this.confirmPasswordInput = page.locator('[data-test="signup-confirmPassword"]');
-    this.signUpButton = page.locator('[data-test="signup-submit"]');
-    this.signInLink = page.getByText('Have an account? Sign In');
+    this.firstNameInput = page.locator('#firstName');
+    this.lastNameInput = page.locator('#lastName');
+    this.usernameInput = page.locator('#username');
+    this.passwordInput = page.locator('#password');
+    this.confirmPasswordInput = page.locator('#confirmPassword');
+    this.signUpButton = page.getByRole('button', { name: 'Sign Up' });
+    this.signInLink = page.getByRole('link', { name: 'Have an account? Sign In' });
     this.firstNameError = page.locator('#firstName-helper-text');
     this.lastNameError = page.locator('#lastName-helper-text');
     this.usernameError = page.locator('#username-helper-text');
