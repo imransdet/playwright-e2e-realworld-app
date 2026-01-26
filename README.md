@@ -1,240 +1,321 @@
-<p align="center">
-  <img alt="Real World App Logo" src="./src/svgs/rwa-logo-light.svg#gh-dark-mode-only" />
-  <img alt="Real World App Logo" src="./src/svgs/rwa-logo.svg#gh-light-mode-only" />
-</p>
+# Playwright E2E Real World App 🚀
 
-<p align="center">
-  <a href="#contributors-">
-    <img src="https://img.shields.io/badge/all_contributors-6-green.svg?style=flat" />
-  </a>
-</p>
+A full-stack React application demonstrating real-world usage of Playwright testing methods, patterns, and workflows. This is a payment application with comprehensive E2E test coverage using Playwright.
 
-<p align="center">
-A payment application to demonstrate <strong>real-world</strong> usage of testing methods, patterns, and workflows.
-</p>
+## 🌟 Live Demo
 
-<p align="center">
-  <img style='width: 70%' alt="Real World App" src="./public/img/rwa-readme-screenshot.png" />
-</p>
+**Production URL:** https://playwright-e2e-realworld-app.netlify.app
 
-> 💬 **Note from maintainers**
->
-> This application is purely for demonstration and educational purposes. Its setup and configuration resemble typical real-world applications, but it's not a full-fledged production system. Use this app to learn, experiment, tinker, and practice application testing.
->
-> Happy Testing!
+## 📋 Table of Contents
 
----
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Running the Application](#running-the-application)
+- [Running Tests](#running-tests)
+- [Project Structure](#project-structure)
+- [Playwright Testing](#playwright-testing)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
 
-## Features
+## ✨ Features
 
-🛠 Built with [React][reactjs], [XState][xstate], [Express][express], [lowdb][lowdb], [Material-UI][material-ui] and [TypeScript][typescript]
-⚡️ Zero database dependencies
-🚀 Full-stack [Express][express]/[React][reactjs] application with real-world features and tests
-👮‍♂️ Local Authentication
-🔥 Database Seeding with End-to-end Tests
+- **User Authentication**: Sign up, sign in, and sign out functionality
+- **Transaction Management**: Create, view, and manage transactions
+- **Bank Accounts**: Add and manage multiple bank accounts
+- **Contact Management**: Create and manage contacts for quick transactions
+- **Notifications**: Real-time notification system
+- **Comments**: Add comments to transactions
+- **User Profile**: Manage user settings and preferences
+- **Responsive Design**: Mobile-friendly UI using Material-UI
+- **Multiple Auth Providers**: Support for Auth0, Okta, AWS Cognito, and Google
 
-## Getting Started
+## 🛠 Tech Stack
 
-The Real-World App (RWA) is a full-stack Express/React application backed by a local JSON database ([lowdb]).
+### Frontend
+- **React 18** - UI library
+- **TypeScript** - Type safety
+- **Material-UI (MUI)** - Component library
+- **Vite** - Build tool and dev server
+- **XState** - State management
+- **React Router** - Client-side routing
+- **Formik** - Form handling
+- **date-fns** - Date manipulation
 
-The app is bundled with [example data](./data/database.json) (`data/database.json`) that contains everything you need to start using the app and run tests out-of-the-box.
+### Backend
+- **Express.js** - Node.js framework
+- **TypeScript** - Type safety
+- **LowDB** - JSON-based database
+- **Passport.js** - Authentication
+- **GraphQL** - API layer
+- **bcryptjs** - Password hashing
 
-> 🚩 **Note**
->
-> You can login to the app with any of the [example app users](./data/database.json#L2). The default password for all users is `s3cret`.
-> Example users can be seen by running `yarn list:dev:users`.
+### Testing
+- **Playwright** - E2E testing framework
+- **Vitest** - Unit testing
+- **Testing Library** - React component testing
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-This project requires [Node.js](https://nodejs.org/en/) to be installed on your machine. Refer to the [.node-version](./.node-version) file for the exact version.
-
-[Yarn Classic](https://classic.yarnpkg.com/) is also required. Once you have [Node.js](https://nodejs.org/en/) installed, execute the following to install the npm module [yarn](https://www.npmjs.com/package/yarn) (Classic - version 1) globally.
-
-```shell
-npm install yarn@latest -g
-```
-
-If you have Node.js' experimental [Corepack](https://nodejs.org/dist/latest/docs/api/corepack.html) feature enabled, then you should skip the step `npm install yarn@latest -g` to install Yarn Classic globally. The RWA project is locally configured for `Corepack` to use Yarn Classic (version 1).
-
-#### Yarn Modern
-
-**This project is not compatible with [Yarn Modern](https://yarnpkg.com/) (version 2 and later).**
+- **Node.js** >= 20.0.0
+- **Yarn** package manager
 
 ### Installation
 
-To clone the repo to your local system and install dependencies, execute the following commands:
+```bash
+# Clone the repository
+git clone https://github.com/imransdet/playwright-e2e-realworld-app.git
+cd playwright-e2e-realworld-app
 
-```shell
-git clone https://github.com/cypress-io/cypress-realworld-app
-cd cypress-realworld-app
-yarn
+# Install dependencies
+yarn install
+
+# Seed the database
+yarn db:seed:dev
 ```
 
-#### Mac users with M-series chips will need to prepend `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true`.
+## 💻 Running the Application
 
-```shell
-PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true yarn install
-```
+### Development Mode
 
-### Run the app
-
-```shell
+```bash
+# Start both React and API servers
 yarn dev
+
+# Start React only
+yarn start:react
+
+# Start API only
+yarn start:api
 ```
 
-> 🚩 **Note**
->
-> The app will run on port `3000` (frontend) and `3001` (API backend) by default. Please make sure there are no other applications or services running on both ports.
-> If you want to change the default ports, you can do so by modifying `PORT` and `VITE_BACKEND_PORT` variables in `.env` file.
-> However, make sure the modified port numbers in `.env` are not committed into Git since the CI environments still expect the application to run on the default ports.
+The application will be available at: `http://localhost:3000`
 
-### Start Playwright
+### Production Build
 
-```shell
+```bash
+# Build for production
+yarn build
+
+# Preview production build
+yarn preview
+```
+
+## 🧪 Running Tests
+
+### Playwright E2E Tests
+
+```bash
+# Run all Playwright tests
 yarn test
+
+# Run tests in UI mode (interactive)
+yarn test:playwright:ui
+
+# Run tests headless
+yarn test:headless
+
+# Run specific test file
+yarn test playwright/tests/auth/login.spec.ts
 ```
 
-> 🚩 **Note**
->
-> If you have changed the default ports, then you need to update Playwright configuration file (`playwright.config.ts`) locally.
+### Unit Tests
 
-## Tests
+```bash
+# Run all unit tests
+yarn test:unit
 
-| Type      | Location                                 |
-| --------- | ---------------------------------------- |
-| e2e       | [tests](./tests)                         |
-| unit      | [`src/__tests__`](./src/__tests__)       |
+# Run unit tests in CI mode
+yarn test:unit:ci
+```
 
-## Database
+## 📁 Project Structure
 
-- The local JSON database is located in [data/database.json](./data/database.json) and is managed with [lowdb].
+```
+playwright-e2e-realworld-app/
+├── playwright/              # 🔥 Playwright test suite
+│   ├── tests/              # Test specifications
+│   │   ├── auth/          # Authentication tests
+│   │   ├── checkout/      # Checkout/transaction tests
+│   │   └── smoke.spec.ts # Smoke tests
+│   ├── pages/             # Page Object Model (POM)
+│   │   ├── base.page.ts
+│   │   ├── login.page.ts
+│   │   └── dashboard.page.ts
+│   ├── fixtures/          # Custom fixtures
+│   ├── helpers/           # Utilities & helpers
+│   ├── config/            # Environment configs
+│   ├── test-data/         # JSON test data
+│   ├── global-setup.ts
+│   ├── global-teardown.ts
+│   └── playwright.config.ts
+│
+├── src/                  # React application source
+│   ├── components/       # Reusable components
+│   ├── containers/       # Container components
+│   ├── machines/         # XState machines
+│   ├── models/           # Data models
+│   ├── utils/           # Utility functions
+│   ├── svgs/            # SVG icons
+│   └── index.tsx        # Entry point
+│
+├── backend/              # Express API server
+│   ├── app.ts
+│   ├── auth.ts
+│   ├── database.ts
+│   ├── graphql/          # GraphQL schema & resolvers
+│   └── *-routes.ts       # API route handlers
+│
+├── data/                # Database files
+│   ├── database.json
+│   ├── database-seed.json
+│   └── empty-seed.json
+│
+├── public/              # Static assets
+│   ├── index.html
+│   ├── favicon.ico
+│   └── img/
+│
+├── scripts/             # Utility scripts
+│   ├── generateSeedData.ts
+│   └── testServer.ts
+│
+├── build/              # Production build output
+├── netlify.toml        # Netlify configuration
+├── vite.config.ts       # Vite configuration
+└── package.json         # Project dependencies
+```
 
-- The database is [reseeded](./data/database-seed.json) each time the application is started (via `yarn dev`).
+## 🎭 Playwright Testing
 
-- Updates via the React frontend are sent to the [Express][express] server and handled by a set of [database utilities](backend/database.ts)
+### Directory Structure
 
-- Generate a new database using `yarn db:seed`.
+The Playwright test suite is organized using best practices:
 
-- An [empty database seed](./data/empty-seed.json) is provided along with a script (`yarn start:empty`) to view the application without data.
+```
+playwright/
+├── tests/                   # Test specifications
+│   ├── auth/               # Authentication tests
+│   ├── checkout/           # Checkout/transaction tests
+│   └── smoke.spec.ts       # Smoke tests
+│
+├── pages/                  # Page Object Model (POM)
+│   ├── base.page.ts        # Base page with common methods
+│   ├── login.page.ts       # Login page object
+│   └── dashboard.page.ts   # Dashboard page object
+│
+├── fixtures/               # Custom fixtures
+│   └── auth.fixture.ts     # Authentication fixture
+│
+├── helpers/               # Utilities & helpers
+│   ├── test-data.ts        # Test data objects
+│   ├── api.helper.ts       # API helper class
+│   └── wait.helper.ts      # Wait/synchronization helpers
+│
+├── config/                # Environment configurations
+│   ├── env.dev.ts          # Development environment config
+│   ├── env.staging.ts      # Staging environment config
+│   └── env.prod.ts         # Production environment config
+│
+├── test-data/             # JSON / static test data
+│   └── users.json          # User test data
+│
+├── global-setup.ts        # Global setup script
+├── global-teardown.ts     # Global teardown script
+└── playwright.config.ts    # Playwright configuration
+```
 
-## Additional NPM Scripts
+### Running Playwright Tests
 
-| Script         | Description                                                                                                                                                                       |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| dev            | Starts backend in watch mode and frontend                                                                                                                                         |
-| dev:coverage   | Starts backend in watch mode and frontend with instrumented code coverage enabled                                                                                                 |
-| dev:auth0      | Starts backend in watch mode and frontend; [Uses Auth0 for Authentication](#auth0) > [Read Guide](http://on.cypress.io/auth0)                                                     |
-| dev:okta       | Starts backend in watch mode and frontend; [Uses Okta for Authentication](#okta) > [Read Guide](http://on.cypress.io/okta)                                                        |
-| dev:cognito    | Starts backend in watch mode and frontend; [Uses Cognito for Authentication](#amazon-cognito) > [Read Guide](http://on.cypress.io/amazon-cognito)                                 |
-| dev:google     | Starts backend in watch mode and frontend; [Uses Google for Authentication](#google) > [Read Guide](https://docs.cypress.io/guides/testing-strategies/google-authentication.html) |
-| start          | Starts backend and frontend                                                                                                                                                       |
-| types          | Validates types                                                                                                                                                                   |
-| db:seed        | Generates fresh database seeds for json files in /data                                                                                                                            |
-| start:empty    | Starts backend, frontend and Cypress with empty database seed                                                                                                                     |
-| tsnode         | Customized ts-node command to get around react-scripts restrictions                                                                                                               |
-| list:dev:users | Provides id and username for users in the dev database                                                                                                                            |
+```bash
+# Run all tests
+yarn test
 
-For a complete list of scripts see [package.json](./package.json)
+# Run in UI mode
+yarn test:playwright:ui
 
+# Run headless
+yarn test:headless
+```
 
-## 3rd Party Authentication Providers
+### Test Patterns
 
-Support for 3rd party authentication is available in the application to demonstrate the concepts on logging in with a 3rd party provider.
+- **Page Object Model (POM)**: Organized page objects for maintainable tests
+- **Fixtures**: Reusable setup code for authentication and common operations
+- **Helpers**: Utility classes for API calls, waiting strategies, and test data
+- **Environment Configs**: Separate configurations for dev, staging, and production
 
-The app contains different entry points for each provider. There is a separate **index** file for each provider, and to use one, you must replace the current **index.tsx** file with the desired one. The following providers are supported:
+## 🌐 Deployment
 
-- [Auth0](#auth0) (index.auth0.tsx)
-- [Okta](#okta) (index.okta.tsx)
-- [Amazon Cognito](#amazon-cognito) (index.cognito.tsx)
-- [Google](#google) (index.google.tsx)
+### Netlify
 
-### Auth0
+The application is automatically deployed to Netlify when pushing to the `main` branch.
 
-Prerequisites include an Auth0 account and a Tenant configured for use with a SPA. Environment variables from Auth0 are to be placed in the [.env](./.env).
+**Live URL:** https://playwright-e2e-realworld-app.netlify.app
 
-To start the application with Auth0, replace the current **src/index.tsx** file with the **src/index.auth0.tsx** file and start the application with `yarn dev:auth0`.
+### Manual Deployment
 
-### Okta
+```bash
+# Build the project
+yarn build
 
-Prerequisites include an [Okta][okta] account and [application configured for use with a SPA][oktacreateapp]. Environment variables from [Okta][okta] are to be placed in the [.env](./.env).
+# Deploy to Netlify (requires Netlify CLI)
+netlify deploy --prod --dir=build
+```
 
-To start the application with Okta, replace the current **src/index.tsx** file with the **src/index.okta.tsx** file and start the application with `yarn dev:okta`.
+### Environment Variables
 
-### Amazon Cognito
+Set up these environment variables in Netlify or your local `.env` file:
 
-A [guide has been written with detail around adapting the RWA](http://on.cypress.io/amazon-cognito) to use [Amazon Cognito][cognito] as the authentication solution and to explain the programmatic command used for Cypress tests.
+```env
+NODE_ENV=production
+VITE_AUTH0=true          # Optional: Enable Auth0
+VITE_OKTA=true            # Optional: Enable Okta
+VITE_AWS_COGNITO=true   # Optional: Enable AWS Cognito
+VITE_GOOGLE=true         # Optional: Enable Google Auth
+```
 
-Prerequisites include an [Amazon Cognito][cognito] account. Environment variables from [Amazon Cognito][cognito] are provided by the [AWS Amplify CLI][awsamplify].
+## 🤝 Contributing
 
-- A user pool is required (identity pool is not used here)
-  - The user pool must have a hosted UI domain configured, which must:
-    - allow callback and sign-out URLs of `http://localhost:3000/`,
-    - allow implicit grant Oauth grant type,
-    - allow these OpenID Connect scopes:
-      - aws.cognito.signin.user.admin
-      - email
-      - openid
-  - The user pool must have an app client configured, with:
-    - enabled auth flow `ALLOW_USER_PASSWORD_AUTH`, only for programmatic login flavor of test.
-    - The `cy.origin()` flavor of test only requires auth flow `ALLOW_USER_SRP_AUTH`, and does not require `ALLOW_USER_PASSWORD_AUTH`.
-  - The user pool must have a user corresponding to the `AWS_COGNITO` env vars mentioned below, and the user's Confirmation Status must be `Confirmed`. If it is `Force Reset Password`, then use a browser to log in once at `http://localhost:3000` while `yarn dev:cognito` is running to reset their password.
+Contributions are welcome! Please follow these steps:
 
-The test knobs are in a few places:
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-- The `.env` file has `VITE_AUTH_TOKEN_NAME` and vars beginning `AWS_COGNITO`. Be careful not to commit any secrets.
-- Both `scripts/mock-aws-exports.js` and `scripts/mock-aws-exports-es5.js` must have the same data; only their export statements differ. These files can be edited manually or exported from the amplify CLI.
-- `cypress.config.ts` has `cognito_programmatic_login` to control flavor of the test.
+### Development Guidelines
 
-To start the application with Cognito, replace the current **src/index.tsx** file with the **src/index.cognito.tsx** file and start the application with `yarn dev:cognito` and run Cypress with `yarn cypress:open`. `yarn dev` may need to have been run once first.
+- Follow the existing code style
+- Write tests for new features
+- Update documentation as needed
+- Run tests before committing (`yarn types` and `yarn test`)
 
-The **only passing spec on this branch** will be the [cognito spec](./cypress/tests/ui-auth-providers/cognito.spec.ts); all others will fail.
+## 📄 License
 
-### Google
+This project is licensed under the MIT License.
 
-Prerequisites include an [Google][google] account. Environment variables from [Google][google] are to be placed in the [.env](./.env).
+## 🙏 Acknowledgments
 
-To start the application with Google, replace the current **src/index.tsx** file with the **src/index.google.tsx** file and start the application with `yarn dev:google`.
+This project is based on the [Cypress Real World App](https://github.com/cypress-io/cypress-realworld-app) and adapted to use Playwright for E2E testing.
 
-## License
+## 📚 Additional Resources
 
-[![license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/cypress-io/cypress/blob/master/LICENSE)
+- [Playwright Documentation](https://playwright.dev/)
+- [React Documentation](https://react.dev/)
+- [Material-UI Documentation](https://mui.com/)
+- [Vite Documentation](https://vitejs.dev/)
+- [XState Documentation](https://xstate.js.org/docs/)
 
-This project is licensed under the terms of the [MIT license](/LICENSE).
+## 📧 Support
 
-[reactjs]: https://reactjs.org
-[xstate]: https://xstate.js.org
-[express]: https://expressjs.com
-[lowdb]: https://github.com/typicode/lowdb
-[typescript]: https://typescriptlang.org
-[material-ui]: https://material-ui.com
-[okta]: https://okta.com
-[auth0]: https://auth0.com
-[oktacreateapp]: https://developer.okta.com/docs/guides/sign-into-spa/react/create-okta-application/
-[cognito]: https://aws.amazon.com/cognito
-[awsamplify]: https://amplify.aws
-[google]: https://google.com
+For issues and questions:
+- GitHub Issues: [Open an Issue](https://github.com/imransdet/playwright-e2e-realworld-app/issues)
+- Email: support@example.com
 
-## Contributors ✨
+---
 
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tr>
-    <td align="center"><a href="http://www.kevinold.com"><img src="https://avatars0.githubusercontent.com/u/21967?v=4" width="100px;" alt=""/><br /><sub><b>Kevin Old</b></sub></a></td>
-    <td align="center"><a href="https://twitter.com/amirrustam"><img src="https://avatars0.githubusercontent.com/u/334337?v=4" width="100px;" alt=""/><br /><sub><b>Amir Rustamzadeh</b></sub></a></td>
-    <td align="center"><a href="https://twitter.com/be_mann"><img src="https://avatars2.githubusercontent.com/u/1268976?v=4" width="100px;" alt=""/><br /><sub><b>Brian Mann</b></sub></a></td>
-    <td align="center"><a href="https://glebbahmutov.com/"><img src="https://avatars1.githubusercontent.com/u/2212006?v=4" width="100px;" alt=""/><br /><sub><b>Gleb Bahmutov</b></sub></a></td>
-    <td align="center"><a href="http://www.bencodezen.io"><img src="https://avatars0.githubusercontent.com/u/4836334?v=4" width="100px;" alt=""/><br /><sub><b>Ben Hong</b></sub></a></td>
-    <td align="center"><a href="https://github.com/davidkpiano"><img src="https://avatars2.githubusercontent.com/u/1093738?v=4" width="100px;" alt=""/><br /><sub><b>David Khourshid</b></sub></a></td>
-  </tr>
-</table>
-
-<!-- markdownlint-enable -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!!
+**Built with ❤️ using Playwright and React**
