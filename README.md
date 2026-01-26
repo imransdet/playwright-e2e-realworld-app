@@ -4,7 +4,7 @@ A full-stack React application demonstrating real-world usage of Playwright test
 
 ## 🌟 Live Demo
 
-**Production URL:** https://playwright-e2e-realworld-app.netlify.app
+**Production URL:** https://realworldapp.netlify.app/
 
 ## 📋 Table of Contents
 

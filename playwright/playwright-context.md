@@ -1,0 +1,6 @@
+- While planning, use playwright/specs folder to store the .plan.md 
+- Always maintain Page Object Model
+- The parent for Playwright is my-realworld-app-playwright/playwright
+- For pages use playwright/pages folder
+- For tests use playwright/tests folder, if required create sub folder
+- User other folder as per need, lke playwright/config, playwright/fixtures, playwright/helpers, playwright/test-data

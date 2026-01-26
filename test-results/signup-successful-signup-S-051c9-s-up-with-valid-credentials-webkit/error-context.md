@@ -1,0 +1,52 @@
+# Page snapshot
+
+```yaml
+- main [ref=e4]:
+  - generic [ref=e5]:
+    - img [ref=e7]
+    - heading "Sign Up" [level=1] [ref=e11]
+    - generic [ref=e12]:
+      - generic [ref=e13]:
+        - generic [ref=e14]:
+          - text: First Name
+          - generic [ref=e15]: "*"
+        - generic [ref=e16]:
+          - textbox "First Name" [active] [ref=e17]
+          - group:
+            - generic: First Name *
+      - generic [ref=e18]:
+        - generic:
+          - text: Last Name
+          - generic: "*"
+        - generic [ref=e19]:
+          - textbox "Last Name" [ref=e20]
+          - group:
+            - generic: Last Name *
+      - generic [ref=e21]:
+        - generic:
+          - text: Username
+          - generic: "*"
+        - generic [ref=e22]:
+          - textbox "Username" [ref=e23]
+          - group:
+            - generic: Username *
+      - generic [ref=e24]:
+        - generic:
+          - text: Password
+          - generic: "*"
+        - generic [ref=e25]:
+          - textbox "Password" [ref=e26]
+          - group:
+            - generic: Password *
+      - generic [ref=e27]:
+        - generic:
+          - text: Confirm Password
+          - generic: "*"
+        - generic [ref=e28]:
+          - textbox "Confirm Password" [ref=e29]
+          - group:
+            - generic: Confirm Password *
+      - button "Sign Up" [ref=e30] [cursor=pointer]: Sign Up
+      - link "Have an account? Sign In" [ref=e33]:
+        - /url: /signin
+```
