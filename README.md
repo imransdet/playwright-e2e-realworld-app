@@ -33,6 +33,7 @@ A full-stack React application demonstrating real-world usage of Playwright test
 ## 🛠 Tech Stack
 
 ### Frontend
+
 - **React 18** - UI library
 - **TypeScript** - Type safety
 - **Material-UI (MUI)** - Component library
@@ -43,6 +44,7 @@ A full-stack React application demonstrating real-world usage of Playwright test
 - **date-fns** - Date manipulation
 
 ### Backend
+
 - **Express.js** - Node.js framework
 - **TypeScript** - Type safety
 - **LowDB** - JSON-based database
@@ -51,6 +53,7 @@ A full-stack React application demonstrating real-world usage of Playwright test
 - **bcryptjs** - Password hashing
 
 ### Testing
+
 - **Playwright** - E2E testing framework
 - **Vitest** - Unit testing
 - **Testing Library** - React component testing
@@ -313,6 +316,7 @@ This project is based on the [Cypress Real World App](https://github.com/cypress
 ## 📧 Support
 
 For issues and questions:
+
 - GitHub Issues: [Open an Issue](https://github.com/imransdet/playwright-e2e-realworld-app/issues)
 - Email: support@example.com
 

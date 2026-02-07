@@ -23,8 +23,6 @@ const TransactionPublicList: React.FC<TransactionPublicListProps> = ({
   const [current, send, publicTransactionService] = useMachine(publicTransactionsMachine);
   const { pageData, results } = current.context;
 
-
-
   useEffect(() => {
     send("FETCH", { ...dateRangeFilters, ...amountRangeFilters });
   }, [send, dateRangeFilters, amountRangeFilters]);

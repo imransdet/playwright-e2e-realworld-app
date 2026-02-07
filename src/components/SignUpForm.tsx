@@ -198,7 +198,6 @@ const SignUpForm: React.FC<Props> = ({ authService }) => {
           )}
         </Formik>
       </div>
-
     </StyledContainer>
   );
 };

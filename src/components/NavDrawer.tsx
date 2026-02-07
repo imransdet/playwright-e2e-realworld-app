@@ -42,7 +42,6 @@ const classes = {
   accountBalance: `${PREFIX}-accountBalance`,
   amount: `${PREFIX}-amount`,
   accountBalanceHidden: `${PREFIX}-accountBalanceHidden`,
-
 };
 
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
@@ -104,8 +103,6 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
   [`& .${classes.accountBalanceHidden}`]: {
     display: "none",
   },
-
-
 }));
 
 const drawerWidth = 240;

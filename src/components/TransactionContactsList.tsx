@@ -23,8 +23,6 @@ const TransactionContactsList: React.FC<TransactionContactListProps> = ({
   const [current, send, contactTransactionService] = useMachine(contactsTransactionsMachine);
   const { pageData, results } = current.context;
 
-
-
   useEffect(() => {
     send("FETCH", { ...dateRangeFilters, ...amountRangeFilters });
   }, [send, dateRangeFilters, amountRangeFilters]);

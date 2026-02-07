@@ -24,8 +24,6 @@ const Root = styled("div")(({ theme }) => ({
   },
 }));
 
-
-
 /* istanbul ignore next */
 const AppAuth0: React.FC = () => {
   const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();

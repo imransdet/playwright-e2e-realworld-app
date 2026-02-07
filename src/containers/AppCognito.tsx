@@ -28,8 +28,6 @@ const Root = styled("div")(({ theme }) => ({
 
 Amplify.configure(awsConfig as ResourcesConfig);
 
-
-
 const AppCognito: React.FC = /* istanbul ignore next */ () => {
   const [authState] = useActor(authService);
   const [, , notificationsService] = useMachine(notificationsMachine);

@@ -174,7 +174,6 @@ const SignInForm: React.FC<Props> = ({ authService }) => {
           )}
         </Formik>
       </div>
-
     </StyledContainer>
   );
 };

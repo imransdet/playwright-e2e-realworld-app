@@ -1,4 +1,4 @@
-import { APIRequestContext } from '@playwright/test';
+import { APIRequestContext } from "@playwright/test";
 
 export class APIHelper {
   readonly request: APIRequestContext;
@@ -34,12 +34,12 @@ export class APIHelper {
   }
 
   async login(username: string, password: string) {
-    const response = await this.post('/login', { username, password });
+    const response = await this.post("/login", { username, password });
     return response;
   }
 
   async createBankAccount(bankName: string, routingNumber: string, accountNumber: string) {
-    const response = await this.post('/bankAccounts', {
+    const response = await this.post("/bankAccounts", {
       bankName,
       routingNumber,
       accountNumber,
@@ -48,7 +48,7 @@ export class APIHelper {
   }
 
   async getTransactions() {
-    const response = await this.get('/transactions');
+    const response = await this.get("/transactions");
     return response;
   }
 }

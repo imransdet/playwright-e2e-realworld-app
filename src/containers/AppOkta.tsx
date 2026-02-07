@@ -26,8 +26,6 @@ const Root = styled("div")(({ theme }) => ({
   },
 }));
 
-
-
 /* istanbul ignore next */
 const AppOkta: React.FC = () => {
   const { authState: oktaAuthState, oktaAuth: oktaAuthService } = useOktaAuth();

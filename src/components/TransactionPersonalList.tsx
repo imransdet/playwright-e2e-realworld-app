@@ -23,8 +23,6 @@ const TransactionPersonalList: React.FC<TransactionPersonalListProps> = ({
   const [current, send, personalTransactionService] = useMachine(personalTransactionsMachine);
   const { pageData, results } = current.context;
 
-
-
   useEffect(() => {
     send("FETCH", { ...dateRangeFilters, ...amountRangeFilters });
   }, [send, dateRangeFilters, amountRangeFilters]);

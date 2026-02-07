@@ -25,8 +25,6 @@ const Root = styled("div")(({ theme }) => ({
   },
 }));
 
-
-
 const App: React.FC = () => {
   const [authState] = useActor(authService);
   const [, , notificationsService] = useMachine(notificationsMachine);
