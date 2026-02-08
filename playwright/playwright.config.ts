@@ -5,7 +5,7 @@ import path from "path"
 dotenv.config({ path: path.resolve(__dirname, "../.env") })
 
 export default defineConfig({
-  testDir: "./tests",
+  testDir: path.join(__dirname, "./tests"),
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -13,8 +13,13 @@ export default defineConfig({
   reporter: "html",
   globalSetup: "./global-setup.ts",
   globalTeardown: "./global-teardown.ts",
-  /* Explicitly match only tests in playwright/tests directory */
-  testMatch: "**/tests/**/*.spec.ts",
+  /* Ignore src directory and Vitest test files to prevent running unit tests */
+  testIgnore: [
+    "**/src/**",
+    "**/__tests__/**",
+    "**/node_modules/**",
+    "**/*.test.ts"
+  ],
   use: {
     baseURL: process.env.BASE_URL || "http://localhost:3000",
     trace: "on-first-retry",
