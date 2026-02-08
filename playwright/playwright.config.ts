@@ -13,13 +13,10 @@ export default defineConfig({
   reporter: "html",
   globalSetup: "./global-setup.ts",
   globalTeardown: "./global-teardown.ts",
-  /* Ignore src directory and Vitest test files to prevent running unit tests */
-  testIgnore: [
-    "**/src/**",
-    "**/__tests__/**",
-    "**/node_modules/**",
-    "**/*.test.ts"
-  ],
+  /* Only run .spec.ts files in tests directory */
+  testMatch: "**/*.spec.ts",
+  /* Ignore src directory to prevent running Vitest tests */
+  testIgnore: ["**/src/**", "**/node_modules/**"],
   use: {
     baseURL: process.env.BASE_URL || "http://localhost:3000",
     trace: "on-first-retry",
