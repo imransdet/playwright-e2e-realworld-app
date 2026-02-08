@@ -15,8 +15,15 @@ export default defineConfig({
   globalTeardown: "./global-teardown.ts",
   /* Only run .spec.ts files in tests directory */
   testMatch: "**/*.spec.ts",
-  /* Ignore src directory to prevent running Vitest tests */
-  testIgnore: ["**/src/**", "**/node_modules/**"],
+  /* Ignore src directory and Vitest test files to prevent running unit tests */
+  testIgnore: [
+    "**/src/**",
+    "**/node_modules/**",
+    "**/__tests__/**",
+    "**/*.test.ts",
+    "**/vitest.config.*",
+    "**/vite.config.*"
+  ],
   use: {
     baseURL: process.env.BASE_URL || "http://localhost:3000",
     trace: "on-first-retry",
