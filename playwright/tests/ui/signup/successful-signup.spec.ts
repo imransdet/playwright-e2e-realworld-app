@@ -6,19 +6,21 @@ import { faker } from "@faker-js/faker";
 
 test.describe("Sign Up - Happy Path", () => {
     let signupPage: SignupPage;
-    const testUser = {
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
-        username: `johndoe${Date.now()}`,
-        password: "SecurePass123!",
-        confirmPassword: "SecurePass123!",
-    };
 
     test.beforeEach(async ({ page }) => {
         signupPage = new SignupPage(page);
     });
 
+    const generateTestUser = () => ({
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
+        username: `johndoe${Date.now()}`,
+        password: "SecurePass123!",
+        confirmPassword: "SecurePass123!",
+    });
+
     test("1.1 User successfully signs up with valid credentials", async ({ page }) => {
+        const testUser = generateTestUser();
         await signupPage.goto();
 
         await expect(signupPage.pageTitle).toBeVisible();
