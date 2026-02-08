@@ -2,12 +2,13 @@ import { test, expect } from "@playwright/test";
 import { SignupPage } from "../../../pages/SignupPage";
 import * as fs from "fs";
 import * as path from "path";
+import { faker } from "@faker-js/faker";
 
 test.describe("Sign Up - Happy Path", () => {
     let signupPage: SignupPage;
     const testUser = {
-        firstName: "John",
-        lastName: "Doe",
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
         username: `johndoe${Date.now()}`,
         password: "SecurePass123!",
         confirmPassword: "SecurePass123!",
