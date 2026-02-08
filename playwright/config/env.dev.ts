@@ -6,6 +6,6 @@ export const devConfig = {
   traceOnFailure: true,
   headless: false,
   slowMo: 50,
-};
+}
 
-export default devConfig;
+export default devConfig

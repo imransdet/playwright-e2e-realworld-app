@@ -10,7 +10,7 @@ export const testUsers = {
     username: "invalidUser",
     password: "wrongPassword",
   },
-};
+}
 
 export const transactionData = {
   valid: {
@@ -23,7 +23,7 @@ export const transactionData = {
     description: "Large transaction",
     receiver: "Jane Smith",
   },
-};
+}
 
 export const bankAccountData = {
   valid: {
@@ -31,4 +31,4 @@ export const bankAccountData = {
     routingNumber: "123456789",
     accountNumber: "987654321",
   },
-};
+}

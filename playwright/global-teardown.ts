@@ -1,7 +1,7 @@
-import { FullConfig } from "@playwright/test";
+import { FullConfig } from "@playwright/test"
 
 async function globalTeardown(config: FullConfig) {
-  console.log("Starting global teardown...");
+  console.log("Starting global teardown...")
 
   // You can perform global cleanup operations here, such as:
   // - Stopping test database
@@ -9,7 +9,7 @@ async function globalTeardown(config: FullConfig) {
   // - Stopping mock servers
   // - Clearing environment variables
 
-  console.log("Global teardown completed");
+  console.log("Global teardown completed")
 }
 
-export default globalTeardown;
+export default globalTeardown

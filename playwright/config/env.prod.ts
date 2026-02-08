@@ -6,6 +6,6 @@ export const prodConfig = {
   traceOnFailure: true,
   headless: true,
   slowMo: 0,
-};
+}
 
-export default prodConfig;
+export default prodConfig

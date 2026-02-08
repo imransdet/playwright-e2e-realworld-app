@@ -1,8 +1,8 @@
-import dotenv from "dotenv";
-import path from "path";
+import dotenv from "dotenv"
+import path from "path"
 
 // Load environment variables from .env file
-dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+dotenv.config({ path: path.resolve(__dirname, "../../.env") })
 
 export const config = {
   baseURL: process.env.BASE_URL || "http://localhost:3000",
@@ -12,6 +12,6 @@ export const config = {
   traceOnFailure: true,
   headless: true,
   slowMo: 0,
-};
+}
 
-export default config;
+export default config

@@ -6,6 +6,6 @@ export const stagingConfig = {
   traceOnFailure: true,
   headless: true,
   slowMo: 0,
-};
+}
 
-export default stagingConfig;
+export default stagingConfig

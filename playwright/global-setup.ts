@@ -1,7 +1,7 @@
-import { FullConfig } from "@playwright/test";
+import { FullConfig } from "@playwright/test"
 
 async function globalSetup(config: FullConfig) {
-  console.log("Starting global setup...");
+  console.log("Starting global setup...")
 
   // You can perform global setup operations here, such as:
   // - Starting a test database
@@ -9,7 +9,7 @@ async function globalSetup(config: FullConfig) {
   // - Starting mock servers
   // - Setting up test environment variables
 
-  console.log("Global setup completed");
+  console.log("Global setup completed")
 }
 
-export default globalSetup;
+export default globalSetup
