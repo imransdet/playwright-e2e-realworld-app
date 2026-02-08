@@ -13,7 +13,8 @@ export default defineConfig({
   reporter: "html",
   globalSetup: "./global-setup.ts",
   globalTeardown: "./global-teardown.ts",
-  testIgnore: ["**/src/**", "**/node_modules/**"],
+  /* Explicitly match only tests in playwright/tests directory */
+  testMatch: "**/tests/**/*.spec.ts",
   use: {
     baseURL: process.env.BASE_URL || "http://localhost:3000",
     trace: "on-first-retry",
