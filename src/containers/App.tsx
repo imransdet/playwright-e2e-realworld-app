@@ -10,6 +10,7 @@ import { authService } from "../machines/authMachine";
 import AlertBar from "../components/AlertBar";
 import SignInForm from "../components/SignInForm";
 import SignUpForm from "../components/SignUpForm";
+import SignupSuccess from "../components/SignupSuccess";
 import { bankAccountsMachine } from "../machines/bankAccountsMachine";
 import PrivateRoutesContainer from "./PrivateRoutesContainer";
 
@@ -55,6 +56,9 @@ const App: React.FC = () => {
         <Switch>
           <Route exact path="/signup">
             <SignUpForm authService={authService} />
+          </Route>
+          <Route exact path="/signup-success">
+            <SignupSuccess />
           </Route>
           <Route exact path="/signin">
             <SignInForm authService={authService} />

@@ -150,7 +150,7 @@ export const authMachine = Machine<AuthMachineContext, AuthMachineSchema, AuthMa
       performSignup: async (ctx, event) => {
         const payload = omit("type", event);
         const resp = await httpClient.post(`http://localhost:${backendPort}/users`, payload);
-        history.push("/signin");
+        history.push("/signup-success");
         return resp.data;
       },
       performLogin: async (ctx, event) => {

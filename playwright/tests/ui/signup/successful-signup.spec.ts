@@ -1,160 +1,79 @@
 import { test, expect } from "@playwright/test"
-import { SignupPage } from "../../../pages/SignupPage"
-import * as fs from "fs"
-import * as path from "path"
 import { faker } from "@faker-js/faker"
 
+import { SignupPage } from "../../../pages/signup.page"
+import { saveUser, findUserByUsername } from "../../../helpers/user-data.helper"
+
 test.describe("Sign Up - Happy Path", () => {
-    let signupPage: SignupPage
+  let signupPage: SignupPage
 
-    test.beforeEach(async ({ page }) => {
-        signupPage = new SignupPage(page)
-    })
+  test.beforeEach(async ({ page }) => {
+    signupPage = new SignupPage(page)
+  })
 
-    const generateTestUser = () => ({
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
-        username: `johndoe${Date.now()}`,
-        password: "SecurePass123!",
-        confirmPassword: "SecurePass123!",
-    })
+  const generateTestUser = () => ({
+    firstName: faker.person.firstName(),
+    lastName: faker.person.lastName(),
+    username: `johndoe${Date.now()}`,
+    password: "SecurePass123!",
+    confirmPassword: "SecurePass123!",
+  })
 
-    test("1.1 User successfully signs up with valid credentials", async ({ page }) => {
-        const testUser = generateTestUser()
-        await signupPage.goto()
+  test("1.1 User successfully signs up with valid credentials", async ({ page }) => {
+    const testUser = generateTestUser()
 
-        await expect(signupPage.pageTitle).toBeVisible()
-        await expect(signupPage.firstNameInput).toBeVisible()
-        await expect(signupPage.lastNameInput).toBeVisible()
-        await expect(signupPage.usernameInput).toBeVisible()
-        await expect(signupPage.passwordInput).toBeVisible()
-        await expect(signupPage.confirmPasswordInput).toBeVisible()
-        await expect(signupPage.signUpButton).toBeVisible()
-        await expect(signupPage.signInLink).toBeVisible()
+    await signupPage.goto()
 
-        const firstNameLabel = page.locator("#firstName-label")
-        const lastNameLabel = page.locator('label[for="lastName"]')
-        const usernameLabel = page.locator('label[for="username"]')
-        const passwordLabel = page.locator('label[for="password"]')
-        const confirmPasswordLabel = page.locator('label[for="confirmPassword"]')
+    await signupPage.assertFormIsVisible()
+    await signupPage.assertLabelsAreVisible()
 
-        await expect(firstNameLabel).toBeVisible()
-        await expect(firstNameLabel).toContainText("First Name")
-        await expect(firstNameLabel).toContainText("*")
+    await signupPage.fillSignupForm(testUser)
+    await signupPage.assertFieldValues(testUser)
 
-        await expect(lastNameLabel).toBeVisible()
-        await expect(lastNameLabel).toContainText("Last Name")
-        await expect(lastNameLabel).toContainText("*")
+    await signupPage.assertNoValidationErrors()
+    await expect(await signupPage.isSignUpButtonEnabled()).toBe(true)
 
-        await expect(usernameLabel).toBeVisible()
-        await expect(usernameLabel).toContainText("Username")
-        await expect(usernameLabel).toContainText("*")
+    // Submit the form
+    await signupPage.submitSignup()
+    await expect(page).toHaveURL(/\/signup-success/, { timeout: 10000 })
+    await signupPage.assertSuccessPageIsVisible()
 
-        await expect(passwordLabel).toBeVisible()
-        await expect(passwordLabel).toContainText("Password")
-        await expect(passwordLabel).toContainText("*")
+    await signupPage.clickGoToSignIn()
+    await expect(page).toHaveURL(/\/signin/, { timeout: 5000 })
 
-        await expect(confirmPasswordLabel).toBeVisible()
-        await expect(confirmPasswordLabel).toContainText("Confirm Password")
-        await expect(confirmPasswordLabel).toContainText("*")
+    const signInTitle = page.getByRole("heading", { name: /Sign [Ii]n/ })
+    const signInButton = page.getByRole("button", { name: "Sign In" })
+    await expect(signInTitle).toBeVisible()
+    await expect(signInButton).toBeVisible()
 
-        await signupPage.fillFirstName(testUser.firstName)
+    saveUser(testUser)
 
-        const firstNameValue = await signupPage.getFirstNameValue()
-        expect(firstNameValue).toBe(testUser.firstName)
+    // Verify user was saved correctly
+    const savedUser = findUserByUsername(testUser.username)
+    expect(savedUser).toBeDefined()
+    expect(savedUser!.firstName).toBe(testUser.firstName)
+    expect(savedUser!.lastName).toBe(testUser.lastName)
+    expect(savedUser!.username).toBe(testUser.username)
+    expect(savedUser!.password).toBe(testUser.password)
+  })
 
-        await signupPage.fillLastName(testUser.lastName)
+  test("1.2 User navigates to Sign In page from Sign Up", async ({ page }) => {
+    await signupPage.goto()
 
-        const lastNameValue = await signupPage.getLastNameValue()
-        expect(lastNameValue).toBe(testUser.lastName)
+    await expect(signupPage.pageTitle).toBeVisible()
+    await expect(signupPage.pageTitle).toContainText("Sign Up")
 
-        await signupPage.fillUsername(testUser.username)
+    await expect(signupPage.signInLink).toBeVisible()
+    await expect(signupPage.signInLink).toContainText("Have an account? Sign In")
 
-        const usernameValue = await signupPage.getUsernameValue()
-        expect(usernameValue).toBe(testUser.username)
+    await signupPage.clickSignInLink()
+    await page.goto("/signin")
 
-        await signupPage.fillPassword(testUser.password)
+    // Verify sign-in page elements are visible
+    const signInTitle = page.getByRole("heading", { name: /Sign [Ii]n/ })
+    const signInButton = page.getByRole("button", { name: "Sign In" })
 
-        const passwordValue = await signupPage.passwordInput.inputValue()
-        expect(passwordValue).toBe(testUser.password)
-
-        await signupPage.fillConfirmPassword(testUser.confirmPassword)
-
-        const confirmPasswordValue = await signupPage.confirmPasswordInput.inputValue()
-        expect(confirmPasswordValue).toBe(testUser.confirmPassword)
-
-        const firstNameError = await signupPage.getFirstNameError()
-        const lastNameError = await signupPage.getLastNameError()
-        const usernameError = await signupPage.getUsernameError()
-        const passwordError = await signupPage.getPasswordError()
-        const confirmPasswordError = await signupPage.getConfirmPasswordError()
-
-        expect(firstNameError).toBeNull()
-        expect(lastNameError).toBeNull()
-        expect(usernameError).toBeNull()
-        expect(passwordError).toBeNull()
-        expect(confirmPasswordError).toBeNull()
-
-        const isSignUpEnabled = await signupPage.isSignUpButtonEnabled()
-        expect(isSignUpEnabled).toBe(true)
-
-        await signupPage.clickSignUp()
-
-        await page.waitForTimeout(3000)
-
-        const currentUrl = page.url()
-        const wasRedirected = !currentUrl.includes("/signup")
-
-        if (wasRedirected) {
-            expect(currentUrl).not.toContain("/signup")
-        } else {
-            console.log("Note: User remained on signup page, possibly due to backend connectivity")
-        }
-
-        const usersFilePath = path.join(__dirname, "../../../test-data/users.json")
-        let users = []
-
-        if (fs.existsSync(usersFilePath)) {
-            const usersData = fs.readFileSync(usersFilePath, "utf-8")
-            users = JSON.parse(usersData)
-        }
-
-        users.push({
-            firstName: testUser.firstName,
-            lastName: testUser.lastName,
-            username: testUser.username,
-            password: testUser.password,
-        })
-
-        fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2))
-
-        const savedUsers = JSON.parse(fs.readFileSync(usersFilePath, "utf-8"))
-        const savedUser = savedUsers.find((u: any) => u.username === testUser.username)
-        expect(savedUser).toBeDefined()
-        expect(savedUser.firstName).toBe(testUser.firstName)
-        expect(savedUser.lastName).toBe(testUser.lastName)
-    })
-
-    test("1.2 User navigates to Sign In page from Sign Up", async ({ page }) => {
-        await signupPage.goto()
-
-        await expect(signupPage.pageTitle).toBeVisible()
-        await expect(signupPage.pageTitle).toContainText("Sign Up")
-
-        await expect(signupPage.signInLink).toBeVisible()
-        await expect(signupPage.signInLink).toContainText("Have an account? Sign In")
-
-        await signupPage.clickSignInLink()
-
-        const currentUrl = page.url()
-        await page.goto("https://realworldapp.netlify.app/signin")
-        const finalUrl = page.url()
-        expect(finalUrl).toContain("/signin")
-
-        const signInTitle = page.getByRole("heading", { name: /Sign [Ii]n/ })
-        const signInButton = page.getByRole("button", { name: "Sign In" })
-
-        await expect(signInTitle).toBeVisible()
-        await expect(signInButton).toBeVisible()
-    })
+    await expect(signInTitle).toBeVisible()
+    await expect(signInButton).toBeVisible()
+  })
 })
