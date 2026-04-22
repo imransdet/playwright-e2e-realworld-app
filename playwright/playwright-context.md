@@ -1,4 +1,4 @@
-- While planning, use playwright/specs folder to store the .plan.md 
+- While planning, use playwright/specs folder to store the .plan.md
 - Always maintain Page Object Model
 - The parent for Playwright is my-realworld-app-playwright/playwright
 - For pages use playwright/pages folder

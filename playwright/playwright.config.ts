@@ -1,8 +1,8 @@
-import { defineConfig, devices } from "@playwright/test"
-import dotenv from "dotenv"
-import path from "path"
+import { defineConfig, devices } from "@playwright/test";
+import dotenv from "dotenv";
+import path from "path";
 
-dotenv.config({ path: path.resolve(__dirname, "../.env") })
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 export default defineConfig({
   testDir: path.join(__dirname, "./tests"),
@@ -22,7 +22,7 @@ export default defineConfig({
     "**/__tests__/**",
     "**/*.test.ts",
     "**/vitest.config.*",
-    "**/vite.config.*"
+    "**/vite.config.*",
   ],
   use: {
     baseURL: process.env.BASE_URL || "http://localhost:3000",
@@ -83,4 +83,4 @@ export default defineConfig({
   //   url: 'http://localhost:3000',
   //   reuseExistingServer: !process.env.CI,
   // },
-})
+});
