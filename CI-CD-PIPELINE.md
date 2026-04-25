@@ -155,6 +155,7 @@ Add these in **Settings → Secrets and variables → Actions**:
 
 | Secret | Description | Required |
 |--------|-------------|----------|
+| `SEED_DEFAULT_USER_PASSWORD` | Password for seeded test users | Yes (use `s3cret` for default seed data) |
 | `NETLIFY_AUTH_TOKEN` | Netlify personal access token | No (fallback to auto-deploy wait) |
 | `NETLIFY_SITE_ID` | Netlify site ID | No (fallback to auto-deploy wait) |
 
