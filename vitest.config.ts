@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     setupFiles: "./src/setup-tests.js",
-    exclude: ["node_modules", "dist"],
+    exclude: ["node_modules", "dist", "playwright"],
     fileParallelism: false,
   },
 });
