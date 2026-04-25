@@ -1,0 +1,401 @@
+# =============================================================================
+# PR Validation Pipeline
+# =============================================================================
+# Triggers on every PR creation or update targeting `main`.
+# Ensures full validation before merge:
+#   1. Static checks (lint, typecheck, unit tests)
+#   2. Build verification
+#   3. Netlify preview deployment & smoke test
+#   4. Playwright E2E tests (full-stack)
+#   5. PR status report
+#   6. Auto-approve & enable auto-merge (for PRs from dev branch)
+# =============================================================================
+
+name: PR Validation Pipeline
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: pr-validation-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "20"
+  NETLIFY_SITE_SLUG: "realworldapp"
+
+jobs:
+  # ===========================================================================
+  # Job 1: Static Checks (Lint, Types, Unit Tests)
+  # ===========================================================================
+  static-checks:
+    name: "🔍 Static Checks"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run ESLint
+        run: yarn eslint
+
+      - name: Check Prettier formatting
+        run: yarn prettier --check "**/**.{ts,js,tsx}" "*.{json,md,yml}"
+
+      - name: TypeScript type check
+        run: yarn types
+
+      - name: Run unit tests
+        run: yarn test:unit:ci
+
+  # ===========================================================================
+  # Job 2: Build Application
+  # ===========================================================================
+  build:
+    name: "🏗️ Build"
+    runs-on: ubuntu-latest
+    needs: static-checks
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build application
+        run: yarn build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: build/
+          retention-days: 7
+
+  # ===========================================================================
+  # Job 3: Netlify Preview Deploy & Smoke Test
+  # ===========================================================================
+  preview-smoke-test:
+    name: "🌐 Preview Smoke Test"
+    runs-on: ubuntu-latest
+    needs: build
+    outputs:
+      preview_url: ${{ steps.preview-url.outputs.url }}
+      preview_status: ${{ steps.smoke-test.outputs.status }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Determine Preview URL
+        id: preview-url
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          PREVIEW_URL="https://deploy-preview-${PR_NUMBER}--${{ env.NETLIFY_SITE_SLUG }}.netlify.app"
+          echo "url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+          echo "Preview URL: $PREVIEW_URL"
+
+      - name: Deploy to Netlify via CLI
+        id: netlify-deploy
+        if: ${{ secrets.NETLIFY_AUTH_TOKEN != '' && secrets.NETLIFY_SITE_ID != '' }}
+        uses: nwtgck/actions-netlify@v3
+        with:
+          publish-dir: "./build"
+          production-branch: main
+          production-deploy: false
+          deploy-message: "Deploy preview for PR #${{ github.event.pull_request.number }}"
+          enable-pull-request-comment: true
+          enable-commit-comment: false
+          overwrites-pull-request-comment: true
+          alias: deploy-preview-${{ github.event.pull_request.number }}
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        timeout-minutes: 5
+
+      - name: Wait for Netlify auto-deploy
+        id: wait-netlify
+        if: ${{ secrets.NETLIFY_AUTH_TOKEN == '' || secrets.NETLIFY_SITE_ID == '' }}
+        run: |
+          PREVIEW_URL="${{ steps.preview-url.outputs.url }}"
+          echo "Waiting for Netlify auto-deploy preview..."
+          echo "Expected URL: $PREVIEW_URL"
+          max_attempts=60
+          attempt=1
+          while [ $attempt -le $max_attempts ]; do
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$PREVIEW_URL" 2>/dev/null || echo "000")
+            if [ "$HTTP_STATUS" = "200" ]; then
+              echo "Preview deployment is live!"
+              echo "  URL: $PREVIEW_URL"
+              echo "  HTTP Status: $HTTP_STATUS"
+              exit 0
+            fi
+            echo "  Attempt $attempt/$max_attempts - HTTP $HTTP_STATUS (retrying in 15s...)"
+            sleep 15
+            attempt=$((attempt + 1))
+          done
+          echo "::error::Preview deployment did not become ready within $((max_attempts * 15 / 60)) minutes"
+          exit 1
+
+      - name: Run smoke test
+        id: smoke-test
+        run: |
+          PREVIEW_URL="${{ steps.preview-url.outputs.url }}"
+          echo "Running smoke test against: $PREVIEW_URL"
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$PREVIEW_URL")
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "::error::Main page returned HTTP $HTTP_STATUS"
+            echo "status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          echo "Main page loads (HTTP $HTTP_STATUS)"
+          BODY=$(curl -s "$PREVIEW_URL")
+          if echo "$BODY" | grep -q "<div id=\"root\""; then
+            echo "React root element found"
+          else
+            echo "::error::React root element not found in HTML"
+            echo "status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          echo "status=passed" >> $GITHUB_OUTPUT
+          echo "All smoke tests passed!"
+
+  # ===========================================================================
+  # Job 4: Playwright E2E Tests (Full-Stack against local CI environment)
+  # ===========================================================================
+  e2e-tests:
+    name: "🧪 E2E Tests (Playwright)"
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 30
+    env:
+      BASE_URL: http://localhost:3000
+      SEED_USERBASE_SIZE: 5
+      SEED_CONTACTS_PER_USER: 3
+      SEED_PAYMENTS_PER_USER: 15
+      SEED_REQUESTS_PER_USER: 10
+      SEED_BANK_ACCOUNTS_PER_USER: 1
+      SEED_LIKES_PER_USER: 2
+      SEED_COMMENTS_PER_USER: 2
+      SEED_NOTIFICATIONS_PER_USER: 5
+      SEED_BANK_TRANSFERS_PER_USER: 5
+      SEED_DEFAULT_USER_PASSWORD: s3cret
+      PAGINATION_PAGE_SIZE: 10
+      PORT: 3000
+      VITE_BACKEND_PORT: 3001
+      NODE_ENV: test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: build/
+
+      - name: Install Playwright browsers
+        run: yarn playwright install --with-deps chromium
+
+      - name: Prepare mock AWS exports
+        run: yarn predev:cognito:ci
+
+      - name: Seed database
+        run: yarn db:seed:dev
+
+      - name: Start backend API server
+        run: yarn start:api &
+
+      - name: Start frontend proxy server
+        run: yarn start:react:proxy-server &
+
+      - name: Wait for servers to be ready
+        run: npx wait-on http://localhost:3000 http://localhost:3001 --timeout 60000
+
+      - name: Verify servers are responding
+        run: |
+          echo "Checking frontend..."
+          curl -s -o /dev/null -w "Frontend: HTTP %{http_code}\n" http://localhost:3000
+          echo "Checking backend..."
+          curl -s -o /dev/null -w "Backend: HTTP %{http_code}\n" http://localhost:3001
+
+      - name: Run Playwright E2E tests
+        run: yarn test:headless --project=chromium
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 30
+
+      - name: Upload test traces on failure
+        uses: actions/upload-artifact@v4
+        if: ${{ failure() }}
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 30
+
+  # ===========================================================================
+  # Job 5: Report PR Status
+  # ===========================================================================
+  report-status:
+    name: "📊 Report Status"
+    runs-on: ubuntu-latest
+    needs: [static-checks, build, preview-smoke-test, e2e-tests]
+    if: always()
+    permissions:
+      pull-requests: write
+      checks: write
+    steps:
+      - name: Determine overall result
+        id: overall
+        run: |
+          STATIC="${{ needs.static-checks.result }}"
+          BUILD="${{ needs.build.result }}"
+          PREVIEW="${{ needs.preview-smoke-test.result }}"
+          E2E="${{ needs.e2e-tests.result }}"
+          if [[ "$STATIC" == "success" && "$BUILD" == "success" && "$PREVIEW" == "success" && "$E2E" == "success" ]]; then
+            echo "result=success" >> $GITHUB_OUTPUT
+          else
+            echo "result=failure" >> $GITHUB_OUTPUT
+          fi
+          echo "### PR Validation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Step | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Static Checks | \`${STATIC}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | \`${BUILD}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Preview Deploy | \`${PREVIEW}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| E2E Tests | \`${E2E}\` |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment on PR with status
+        uses: actions/github-script@v7
+        env:
+          STATIC_RESULT: ${{ needs.static-checks.result }}
+          BUILD_RESULT: ${{ needs.build.result }}
+          PREVIEW_RESULT: ${{ needs.preview-smoke-test.result }}
+          E2E_RESULT: ${{ needs.e2e-tests.result }}
+          OVERALL_RESULT: ${{ steps.overall.outputs.result }}
+        with:
+          script: |
+            const pr_number = context.payload.pull_request.number;
+            const staticResult = process.env.STATIC_RESULT;
+            const buildResult = process.env.BUILD_RESULT;
+            const previewResult = process.env.PREVIEW_RESULT;
+            const e2eResult = process.env.E2E_RESULT;
+            const overallResult = process.env.OVERALL_RESULT;
+            const previewUrl = `https://deploy-preview-${pr_number}--realworldapp.netlify.app`;
+            const icon = (result) => {
+              switch(result) {
+                case 'success': return '✅';
+                case 'failure': return '❌';
+                case 'cancelled': return '⚠️';
+                case 'skipped': return '⏭️';
+                default: return '⏳';
+              }
+            };
+            const allPassed = overallResult === 'success';
+            const header = allPassed ? '✅ ALL CHECKS PASSED' : '❌ SOME CHECKS FAILED';
+            const body = [
+              `## ${header}`,
+              ``,
+              `### 🌐 Preview Deployment`,
+              `**URL:** [${previewUrl}](${previewUrl})`,
+              ``,
+              `### 📋 Check Results`,
+              `| Check | Status |`,
+              `|-------|--------|`,
+              `| 🔍 Static Checks (Lint, Types, Unit Tests) | ${icon(staticResult)} \`${staticResult}\` |`,
+              `| 🏗️ Build Verification | ${icon(buildResult)} \`${buildResult}\` |`,
+              `| 🌐 Preview Deploy and Smoke Test | ${icon(previewResult)} \`${previewResult}\` |`,
+              `| 🧪 E2E Tests (Playwright) | ${icon(e2eResult)} \`${e2eResult}\` |`,
+              ``,
+              allPassed
+                ? `✅ **This PR is ready for review and merge.**`
+                : `❌ **Please fix the failing checks before merging.**`,
+              ``,
+              `---`,
+              `*Pipeline run: [${context.runId}](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})*`
+            ].join('\n');
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr_number,
+            });
+            const botComment = comments.find(
+              (c) => c.user.type === 'Bot' && c.body.includes('PR Validation:')
+            );
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr_number,
+                body: `### PR Validation: ${header}\n${body}`,
+              });
+            }
+
+  # ===========================================================================
+  # Job 6: Auto Approve and Enable Auto-Merge (only for PRs from dev branch)
+  # ===========================================================================
+  auto-approve-merge:
+    name: "🤖 Auto Approve and Merge"
+    runs-on: ubuntu-latest
+    needs: [static-checks, build, preview-smoke-test, e2e-tests]
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'dev' && needs.static-checks.result == 'success' && needs.build.result == 'success' && needs.preview-smoke-test.result == 'success' && needs.e2e-tests.result == 'success'
+    permissions:
+      pull-requests: write
+      contents: write
+    steps:
+      - name: Auto approve PR
+        run: |
+          gh pr review ${{ github.event.pull_request.number }} \
+            --approve \
+            --body "✅ All CI checks passed. Auto-approved for merge."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable auto-merge (squash)
+        run: |
+          gh pr merge ${{ github.event.pull_request.number }} \
+            --squash \
+            --auto \
+            --subject "Merge pull request #${{ github.event.pull_request.number }} from dev" \
+            --body "Auto-merged after all CI checks passed."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

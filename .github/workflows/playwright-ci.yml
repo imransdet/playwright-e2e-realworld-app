@@ -1,87 +1,93 @@
-name: CI Pipeline
+# =============================================================================
+# Dev Branch CI - Quick Feedback
+# =============================================================================
+# Runs on pushes to `dev` branch for quick feedback during development.
+# Full validation happens in pr-validation.yml when PR targets `main`.
+# =============================================================================
+
+name: Dev Branch CI
 
 on:
   push:
     branches: [dev]
-  pull_request:
-    branches: [main]
-    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: dev-ci-${{ github.sha }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "20"
 
 jobs:
-  lint-and-format:
-    name: Lint & Format Check
+  # ===========================================================================
+  # Quick Lint & Type Check
+  # ===========================================================================
+  lint-and-typecheck:
+    name: "Lint & Type Check"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
+
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: ESLint check
+
+      - name: Run ESLint
         run: yarn eslint
-      - name: Prettier format check
+
+      - name: Check Prettier formatting
         run: yarn prettier --check "**/**.{ts,js,tsx}" "*.{json,md,yml}"
+
       - name: TypeScript type check
         run: yarn types
 
-  playwright-tests:
-    name: Playwright Tests
-    needs: lint-and-format
+  # ===========================================================================
+  # Build Check
+  # ===========================================================================
+  build:
+    name: "Build Check"
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    needs: lint-and-typecheck
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
+
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: Install Playwright Browsers
-        run: yarn playwright install --with-deps chromium
-      - name: Seed database
-        run: yarn db:seed:dev
-      - name: Start backend server
-        run: yarn start:api &
-      - name: Start frontend server
-        run: yarn start:react &
-      - name: Wait for servers to be ready
-        run: |
-          npx wait-on http://localhost:3000 http://localhost:3001 --timeout 30000
-      - name: Run Playwright tests
-        run: yarn test:headless --project=chromium
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
+
+      - name: Build application
+        run: yarn build
+
+  # ===========================================================================
+  # Unit Tests
+  # ===========================================================================
+  unit-tests:
+    name: "Unit Tests"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
 
-  auto-approve:
-    name: Auto Approve PR
-    needs: [lint-and-format, playwright-tests]
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'dev'
-    permissions:
-      pull-requests: write
-    steps:
-      - name: Auto approve PR
-        run: |
-          gh pr review ${{ github.event.pull_request.number }} --approve --body "✅ All checks passed. Auto-approved for merge."
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
 
-  auto-merge:
-    name: Auto Merge to Main
-    needs: [lint-and-format, playwright-tests]
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'dev'
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-      - name: Enable auto-merge
-        run: |
-          gh pr merge ${{ github.event.pull_request.number }} --merge --auto
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run unit tests
+        run: yarn test:unit:ci

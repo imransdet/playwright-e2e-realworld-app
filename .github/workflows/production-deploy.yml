@@ -1,0 +1,136 @@
+# =============================================================================
+# Production Deployment Pipeline
+# =============================================================================
+# Triggers on merge to `main` branch.
+# Validates production health after Netlify auto-deploy.
+# =============================================================================
+
+name: Production Deploy & Health Check
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+env:
+  PRODUCTION_URL: "https://realworldapp.netlify.app"
+  NODE_VERSION: "20"
+
+jobs:
+  # ===========================================================================
+  # Job 1: Wait for Netlify Production Deploy
+  # ===========================================================================
+  wait-for-deploy:
+    name: "Wait for Production Deploy"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Wait for Netlify production deployment
+        run: |
+          echo "Waiting for Netlify production deployment..."
+          echo "URL: ${{ env.PRODUCTION_URL }}"
+          max_attempts=40
+          attempt=1
+          while [ $attempt -le $max_attempts ]; do
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ env.PRODUCTION_URL }}" 2>/dev/null || echo "000")
+            if [ "$HTTP_STATUS" = "200" ]; then
+              echo "Production deployment is live!"
+              echo "  URL: ${{ env.PRODUCTION_URL }}"
+              echo "  HTTP Status: $HTTP_STATUS"
+              exit 0
+            fi
+            echo "  Attempt $attempt/$max_attempts - HTTP $HTTP_STATUS (retrying in 15s...)"
+            sleep 15
+            attempt=$((attempt + 1))
+          done
+          echo "::error::Production deployment not ready within $((max_attempts * 15 / 60)) minutes"
+          exit 1
+
+  # ===========================================================================
+  # Job 2: Production Smoke Test
+  # ===========================================================================
+  smoke-test:
+    name: "Production Smoke Test"
+    runs-on: ubuntu-latest
+    needs: wait-for-deploy
+    steps:
+      - name: Run smoke tests against production
+        run: |
+          PROD_URL="${{ env.PRODUCTION_URL }}"
+          echo "Running smoke tests against: $PROD_URL"
+
+          # Test 1: Main page loads
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$PROD_URL")
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "::error::Production main page returned HTTP $HTTP_STATUS"
+            exit 1
+          fi
+          echo "Main page loads (HTTP $HTTP_STATUS)"
+
+          # Test 2: React root element exists
+          BODY=$(curl -s "$PROD_URL")
+          if echo "$BODY" | grep -q '<div id="root"'; then
+            echo "React root element found"
+          else
+            echo "::error::React root element not found in production HTML"
+            exit 1
+          fi
+
+          # Test 3: Static assets accessible
+          ASSET_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$PROD_URL/favicon.ico")
+          if [ "$ASSET_STATUS" = "200" ] || [ "$ASSET_STATUS" = "304" ]; then
+            echo "Static assets accessible"
+          else
+            echo "::warning::Static assets returned HTTP $ASSET_STATUS"
+          fi
+
+          # Test 4: Security headers present
+          HEADERS=$(curl -sI "$PROD_URL")
+          for header in "X-Frame-Options" "X-XSS-Protection" "X-Content-Type-Options"; do
+            if echo "$HEADERS" | grep -q "$header"; then
+              echo "Security header present: $header"
+            else
+              echo "::warning::Missing security header: $header"
+            fi
+          done
+
+          echo "All smoke tests passed!"
+
+  # ===========================================================================
+  # Job 3: Notify on Failure
+  # ===========================================================================
+  notify-failure:
+    name: "Notify Deployment Failure"
+    runs-on: ubuntu-latest
+    needs: [wait-for-deploy, smoke-test]
+    if: failure()
+    permissions:
+      issues: write
+    steps:
+      - name: Create issue for failed deployment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = [
+              `## Production Deployment Failed`,
+              ``,
+              `The production deployment health check failed.`,
+              ``,
+              `**URL:** ${{ env.PRODUCTION_URL }}`,
+              `**Commit:** ${context.sha.substring(0, 7)}`,
+              `**Workflow Run:** [${context.runId}](${runUrl})`,
+              ``,
+              `Please investigate and fix the issue.`,
+            ].join('\n');
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Production deployment failed - ${new Date().toISOString().split('T')[0]}`,
+              body: body,
+              labels: ['deployment', 'production', 'bug'],
+            });
