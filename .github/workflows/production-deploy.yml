@@ -10,6 +10,12 @@ name: Production Deploy & Health Check
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "URL to test (defaults to production)"
+        required: false
+        default: "https://realworldapp.netlify.app"
 
 concurrency:
   group: production-deploy
