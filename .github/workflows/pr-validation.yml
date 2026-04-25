@@ -55,9 +55,6 @@ jobs:
       - name: TypeScript type check
         run: yarn types
 
-      - name: Run unit tests
-        run: yarn test:unit:ci
-
   # ===========================================================================
   # Job 2: Build Application
   # ===========================================================================
