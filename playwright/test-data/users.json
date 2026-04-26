@@ -34,5 +34,35 @@
     "lastName": "Doe",
     "username": "johndoe1770485973858",
     "password": "SecurePass123!"
+  },
+  {
+    "firstName": "Retta",
+    "lastName": "Hyatt",
+    "username": "johndoe1776841827807",
+    "password": "SecurePass123!"
+  },
+  {
+    "firstName": "Bert",
+    "lastName": "Quitzon",
+    "username": "johndoe1776842032526",
+    "password": "SecurePass123!"
+  },
+  {
+    "firstName": "Caroline",
+    "lastName": "Kuphal",
+    "username": "johndoe1776844505021",
+    "password": "SecurePass123!"
+  },
+  {
+    "firstName": "Angelina",
+    "lastName": "Erdman",
+    "username": "johndoe1776845154442",
+    "password": "SecurePass123!"
+  },
+  {
+    "firstName": "Marilie",
+    "lastName": "Gutkowski",
+    "username": "johndoe1776845511960",
+    "password": "SecurePass123!"
   }
 ]

@@ -74,6 +74,61 @@
       "balance": 49474,
       "createdAt": "2023-12-07T04:39:38.383Z",
       "modifiedAt": "2024-03-07T00:07:36.510Z"
+    },
+    {
+      "id": "4SpK97ghm",
+      "uuid": "8fbe3f06-8576-41db-ba7b-03bd7b4a5db3",
+      "firstName": "imrran",
+      "lastName": "al",
+      "username": "testuser",
+      "password": "$2a$10$6NJJDHnyvZNath/pZuRHze/87dDF3Ym0GFwspvVMRwp4O45SAVpVu",
+      "balance": 0,
+      "createdAt": "2026-04-22T07:48:00.306Z",
+      "modifiedAt": "2026-04-22T07:48:00.306Z"
+    },
+    {
+      "id": "Hp5upCL_Y",
+      "uuid": "2adaeac3-4cec-4987-9a69-ada95b37a864",
+      "firstName": "MyName",
+      "lastName": "khan",
+      "username": "khan009",
+      "password": "$2a$10$SesFmva5ontnPmPSu9nWG.K2dhwoUk01onzv.h7QGaqQsZ1mgPE4i",
+      "balance": 0,
+      "createdAt": "2026-04-22T07:52:15.380Z",
+      "modifiedAt": "2026-04-22T07:52:15.380Z"
+    },
+    {
+      "id": "b-_Htrr1m",
+      "uuid": "cc24fd6e-8b20-4e0d-911b-ac60339eac6a",
+      "firstName": "Caroline",
+      "lastName": "Kuphal",
+      "username": "johndoe1776844505021",
+      "password": "$2a$10$Gk5YOLOfjRi1ixdckU.uN.BkChqzJNp1GYye0jXU6pmYBCS4Da5gm",
+      "balance": 0,
+      "createdAt": "2026-04-22T07:55:06.073Z",
+      "modifiedAt": "2026-04-22T07:55:06.073Z"
+    },
+    {
+      "id": "4u93zdg_w",
+      "uuid": "b241cfe5-9451-4f0a-a0b1-3cce63c20693",
+      "firstName": "Angelina",
+      "lastName": "Erdman",
+      "username": "johndoe1776845154442",
+      "password": "$2a$10$zoKN.eZzcWp/SNCqaprayuldu1nf0SmEPt3b7qbXk6zi2j2byKrVe",
+      "balance": 0,
+      "createdAt": "2026-04-22T08:05:55.772Z",
+      "modifiedAt": "2026-04-22T08:05:55.772Z"
+    },
+    {
+      "id": "QIcwxj15n",
+      "uuid": "3226d52f-1a29-4974-a196-2ec38b0465d2",
+      "firstName": "Marilie",
+      "lastName": "Gutkowski",
+      "username": "johndoe1776845511960",
+      "password": "$2a$10$YE2Hpcr8XlAd8Hqh07i3GevRN.p.bEpUw4MkbWvHXJ5vlbsjqd4eO",
+      "balance": 0,
+      "createdAt": "2026-04-22T08:11:53.347Z",
+      "modifiedAt": "2026-04-22T08:11:53.347Z"
     }
   ],
   "contacts": [

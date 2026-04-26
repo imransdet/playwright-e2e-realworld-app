@@ -41,15 +41,25 @@ const SignupSuccess: React.FC = () => {
     <StyledContainer maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper} data-test="signup-success">
-        <CheckCircleOutlineIcon className={classes.icon} sx={{ color: "success.main" }} data-test="signup-success-icon" />
+        <CheckCircleOutlineIcon
+          className={classes.icon}
+          sx={{ color: "success.main" }}
+          data-test="signup-success-icon"
+        />
         <Typography component="h1" variant="h5" data-test="signup-success-title">
           Sign Up Successful!
         </Typography>
         <Box sx={{ mt: 2, width: "100%" }}>
           <Card variant="outlined">
             <CardContent>
-              <Typography variant="body1" color="text.secondary" align="center" data-test="signup-success-message">
-                Your account has been created successfully. You can now sign in with your credentials.
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                align="center"
+                data-test="signup-success-message"
+              >
+                Your account has been created successfully. You can now sign in with your
+                credentials.
               </Typography>
             </CardContent>
           </Card>
