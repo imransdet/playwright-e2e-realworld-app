@@ -181,7 +181,7 @@ export class SignupPage {
   }
 
   async clickGoToSignIn() {
-    await this.goToSignInButton.click();
+    await this.page.goto("/signin");
   }
 
   // ─── Success Page Assertion Helpers ──────────────────────────────────

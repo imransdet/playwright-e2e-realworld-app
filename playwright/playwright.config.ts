@@ -9,7 +9,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: 1,
   reporter: "html",
   globalSetup: "./global-setup.ts",
   globalTeardown: "./global-teardown.ts",
@@ -25,7 +25,7 @@ export default defineConfig({
     "**/vite.config.*",
   ],
   use: {
-    baseURL: process.env.BASE_URL || "http://localhost:3000",
+    baseURL: "http://localhost:3000",
     trace: "on-first-retry",
     testIdAttribute: "data-test",
   },
@@ -36,7 +36,7 @@ export default defineConfig({
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
-        baseURL: process.env.BASE_URL || "http://localhost:3000",
+        baseURL: "http://localhost:3000",
       },
     },
 
@@ -44,7 +44,7 @@ export default defineConfig({
       name: "firefox",
       use: {
         ...devices["Desktop Firefox"],
-        baseURL: process.env.BASE_URL || "http://localhost:3000",
+        baseURL: "http://localhost:3000",
       },
     },
 
@@ -52,7 +52,7 @@ export default defineConfig({
       name: "webkit",
       use: {
         ...devices["Desktop Safari"],
-        baseURL: process.env.BASE_URL || "http://localhost:3000",
+        baseURL: "http://localhost:3000",
       },
     },
 
@@ -78,9 +78,12 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
+  // Note: For local development, start servers manually with `npm run start:ci` before running tests
+  // webServer is disabled because environment variables aren't loaded correctly
   // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
+  //   command: "./start-servers.sh",
+  //   url: "http://localhost:3000",
+  //   reuseExistingServer: true,
+  //   timeout: 180000,
   // },
 });

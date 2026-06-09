@@ -64,5 +64,47 @@
     "lastName": "Gutkowski",
     "username": "johndoe1776845511960",
     "password": "SecurePass123!"
+  },
+  {
+    "firstName": "Paulette",
+    "lastName": "Thompson",
+    "username": "johndoe1778997094704",
+    "password": "SecurePass123!"
+  },
+  {
+    "firstName": "Dawn",
+    "lastName": "Emard",
+    "username": "johndoe1778997657406",
+    "password": "SecurePass123!"
+  },
+  {
+    "firstName": "Dawn",
+    "lastName": "Tillman",
+    "username": "johndoe1778997740322",
+    "password": "SecurePass123!"
+  },
+  {
+    "firstName": "Alejandro",
+    "lastName": "Heathcote",
+    "username": "johndoe1778997779097",
+    "password": "SecurePass123!"
+  },
+  {
+    "firstName": "Charlie",
+    "lastName": "O'Connell",
+    "username": "johndoe1780896977275",
+    "password": "SecurePass123!"
+  },
+  {
+    "firstName": "Desmond",
+    "lastName": "Mayer",
+    "username": "johndoe1780896982105",
+    "password": "SecurePass123!"
+  },
+  {
+    "firstName": "Silvia",
+    "lastName": "Hilll",
+    "username": "johndoe1780896988692",
+    "password": "SecurePass123!"
   }
 ]

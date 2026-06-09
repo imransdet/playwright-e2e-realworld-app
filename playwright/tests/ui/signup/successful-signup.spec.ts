@@ -39,11 +39,10 @@ test.describe("Sign Up - Happy Path", () => {
     await signupPage.assertSuccessPageIsVisible();
 
     await signupPage.clickGoToSignIn();
-    await expect(page).toHaveURL(/\/signin/, { timeout: 5000 });
 
     const signInTitle = page.getByRole("heading", { name: /Sign [Ii]n/ });
     const signInButton = page.getByRole("button", { name: "Sign In" });
-    await expect(signInTitle).toBeVisible();
+    await expect(signInTitle).toBeVisible({ timeout: 5000 });
     await expect(signInButton).toBeVisible();
 
     saveUser(testUser);

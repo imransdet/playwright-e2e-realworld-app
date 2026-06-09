@@ -157,6 +157,7 @@
     "list:dev:users": "cat data/database.json | json -a users | json -a id username",
     "types": "tsc --noEmit",
     "test": "playwright test --config=playwright/playwright.config.ts",
+    "test:e2e": "./scripts/test-e2e.sh",
     "test:headless": "playwright test --config=playwright/playwright.config.ts",
     "test:unit": "vitest",
     "test:unit:ci": "vitest --run",
