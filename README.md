@@ -1,325 +1,285 @@
-# Playwright E2E Real World App 🚀
+# Playwright E2E Real World App 🎭
 
-A full-stack React application demonstrating real-world usage of Playwright testing methods, patterns, and workflows. This is a payment application with comprehensive E2E test coverage using Playwright.
+[![Dev Branch CI](https://github.com/imransdet/playwright-e2e-realworld-app/actions/workflows/playwright-ci.yml/badge.svg)](https://github.com/imransdet/playwright-e2e-realworld-app/actions/workflows/playwright-ci.yml)
+[![PR Validation](https://github.com/imransdet/playwright-e2e-realworld-app/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/imransdet/playwright-e2e-realworld-app/actions/workflows/pr-validation.yml)
+[![Production Deploy](https://github.com/imransdet/playwright-e2e-realworld-app/actions/workflows/production-deploy.yml/badge.svg)](https://github.com/imransdet/playwright-e2e-realworld-app/actions/workflows/production-deploy.yml)
 
-## 🌟 Live Demo
+A portfolio project demonstrating **senior-level Playwright E2E automation** on a full-stack React payment application. Covers Page Object Model architecture, multi-browser execution, test data management, and a full CI/CD pipeline from development to production.
 
-**Production URL:** https://realworldapp.netlify.app/
+**Live App:** https://realworldapp.netlify.app/
+
+---
 
 ## 📋 Table of Contents
 
-- [Features](#features)
+- [About the Project](#about-the-project)
 - [Tech Stack](#tech-stack)
+- [CI/CD Pipeline](#cicd-pipeline)
+- [Playwright Test Suite](#playwright-test-suite)
 - [Getting Started](#getting-started)
 - [Running the Application](#running-the-application)
 - [Running Tests](#running-tests)
 - [Project Structure](#project-structure)
-- [Playwright Testing](#playwright-testing)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
+- [Acknowledgments](#acknowledgments)
 
-## ✨ Features
+---
 
-- **User Authentication**: Sign up, sign in, and sign out functionality
-- **Transaction Management**: Create, view, and manage transactions
-- **Bank Accounts**: Add and manage multiple bank accounts
-- **Contact Management**: Create and manage contacts for quick transactions
-- **Notifications**: Real-time notification system
-- **Comments**: Add comments to transactions
-- **User Profile**: Manage user settings and preferences
-- **Responsive Design**: Mobile-friendly UI using Material-UI
-- **Multiple Auth Providers**: Support for Auth0, Okta, AWS Cognito, and Google
+## 🎯 About the Project
+
+This project was built to showcase real-world Playwright automation practices on a non-trivial full-stack application. The app is a payment platform (sign up, transactions, bank accounts, contacts, notifications) — complex enough to demonstrate meaningful test scenarios.
+
+**What this project demonstrates:**
+
+- ✅ Page Object Model (POM) with clean separation of locators and actions
+- ✅ Multi-browser execution (Chromium, Firefox, WebKit)
+- ✅ Dynamic test data generation using Faker + JSON persistence
+- ✅ Structured test organisation (`tests/ui/`, `pages/`, `helpers/`, `test-data/`)
+- ✅ Global setup and teardown hooks
+- ✅ End-to-end CI/CD pipeline with GitHub Actions (lint → build → E2E → deploy → health check)
+
+---
 
 ## 🛠 Tech Stack
 
-### Frontend
+### Application
 
-- **React 18** - UI library
-- **TypeScript** - Type safety
-- **Material-UI (MUI)** - Component library
-- **Vite** - Build tool and dev server
-- **XState** - State management
-- **React Router** - Client-side routing
-- **Formik** - Form handling
-- **date-fns** - Date manipulation
+| Layer | Technology |
+|---|---|
+| Frontend | React 18, TypeScript, Material-UI, Vite, XState, React Router |
+| Backend | Express.js, TypeScript, LowDB, Passport.js, GraphQL, bcryptjs |
+| Database | LowDB (JSON-based, seed-driven) |
 
-### Backend
+### Testing & CI
 
-- **Express.js** - Node.js framework
-- **TypeScript** - Type safety
-- **LowDB** - JSON-based database
-- **Passport.js** - Authentication
-- **GraphQL** - API layer
-- **bcryptjs** - Password hashing
+| Tool | Purpose |
+|---|---|
+| Playwright | E2E testing — UI, multi-browser |
+| Vitest | Unit testing |
+| GitHub Actions | CI/CD pipeline (3 workflows) |
+| Netlify | Hosting + preview deployments per PR |
+| Faker.js | Dynamic test data generation |
 
-### Testing
+---
 
-- **Playwright** - E2E testing framework
-- **Vitest** - Unit testing
-- **Testing Library** - React component testing
+## 🔄 CI/CD Pipeline
+
+Three GitHub Actions workflows cover the full delivery lifecycle:
+
+### 1. Dev Branch CI (`playwright-ci.yml`)
+
+Triggers on every push to `dev`. Fast feedback loop for ongoing development.
+
+```
+push to dev
+  └── Lint & Type Check
+        └── Build
+              └── Unit Tests (parallel)
+                    └── Playwright E2E (Chromium)
+```
+
+### 2. PR Validation (`pr-validation.yml`)
+
+Triggers on every PR targeting `main`. Full gate before merge.
+
+```
+pull_request → main
+  └── Static Checks (lint, types, unit tests)
+        └── Build
+              └── Netlify Preview Deploy
+                    └── Playwright E2E (full-stack, local CI environment)
+                          └── PR Status Report → Auto-merge (dev → main)
+```
+
+### 3. Production Deploy & Health Check (`production-deploy.yml`)
+
+Triggers on merge to `main`. Validates the live production environment post-deploy.
+
+```
+merge to main
+  └── Wait for Netlify production deploy
+        └── Production smoke test (health check on live URL)
+```
+
+All Playwright reports and traces are uploaded as GitHub Actions artifacts and retained for 30 days.
+
+---
+
+## 🎭 Playwright Test Suite
+
+### Directory Structure
+
+```
+playwright/
+├── tests/
+│   └── ui/
+│       └── signup/
+│           └── successful-signup.spec.ts   # Sign up happy path tests
+│
+├── pages/
+│   └── signup.page.ts                      # Page Object Model — signup & success pages
+│
+├── helpers/
+│   └── user-data.helper.ts                 # Load/save/find users in JSON
+│
+├── config/
+│   └── config.ts                           # Base config (URLs, timeouts)
+│
+├── test-data/
+│   └── users.json                          # Persisted test user data
+│
+├── specs/
+│   └── signup-page.plan.md                 # Full test plan (18 scenarios)
+│
+├── global-setup.ts                         # Global setup hook
+├── global-teardown.ts                      # Global teardown hook
+└── playwright.config.ts                    # Multi-browser config
+```
+
+### Test Scenarios Implemented
+
+| ID | Scenario | Status |
+|---|---|---|
+| 1.1 | User successfully signs up with valid credentials | ✅ |
+| 1.2 | User navigates to Sign In page from Sign Up | ✅ |
+
+Full test plan (validation, password rules, duplicates, edge cases, accessibility) is documented in [`playwright/specs/signup-page.plan.md`](playwright/specs/signup-page.plan.md).
+
+### Key Patterns
+
+**Page Object Model** — all locators and actions encapsulated in `pages/signup.page.ts`:
+
+```typescript
+await signupPage.goto();
+await signupPage.fillSignupForm(testUser);
+await signupPage.submitSignup();
+await signupPage.assertSuccessPageIsVisible();
+```
+
+**Dynamic Test Data** — each test generates a unique user via Faker, preventing conflicts across parallel or repeated runs:
+
+```typescript
+const testUser = {
+  firstName: faker.person.firstName(),
+  username: `johndoe${Date.now()}`,
+  password: "SecurePass123!",
+  // ...
+};
+```
+
+**Multi-browser** — all tests execute against Chromium, Firefox, and WebKit in the same run.
+
+---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- **Node.js** >= 20.0.0
-- **Yarn** package manager
+- Node.js >= 20.0.0
+- Yarn
 
 ### Installation
 
 ```bash
-# Clone the repository
 git clone https://github.com/imransdet/playwright-e2e-realworld-app.git
 cd playwright-e2e-realworld-app
 
-# Install dependencies
 yarn install
-
-# Seed the database
 yarn db:seed:dev
 ```
 
+---
+
 ## 💻 Running the Application
 
-### Development Mode
-
 ```bash
-# Start both React and API servers
+# Start both React (port 3000) and API (port 3001)
 yarn dev
 
-# Start React only
-yarn start:react
-
-# Start API only
-yarn start:api
+# CI mode (proxy server + API)
+yarn start:ci
 ```
 
-The application will be available at: `http://localhost:3000`
-
-### Production Build
-
-```bash
-# Build for production
-yarn build
-
-# Preview production build
-yarn preview
-```
+---
 
 ## 🧪 Running Tests
 
-### Playwright E2E Tests
+### Start servers first (required for E2E tests)
 
 ```bash
-# Run all Playwright tests
-yarn test
+yarn start:ci
+```
 
-# Run tests in UI mode (interactive)
+### Playwright E2E Tests (in a separate terminal)
+
+```bash
+# Run all tests (Chromium, Firefox, WebKit)
+yarn test:playwright
+
+# Interactive UI mode
 yarn test:playwright:ui
 
-# Run tests headless
+# Headless only
 yarn test:headless
 
-# Run specific test file
-yarn test playwright/tests/auth/login.spec.ts
+# Specific browser
+yarn test:playwright --project=chromium
 ```
 
 ### Unit Tests
 
 ```bash
-# Run all unit tests
 yarn test:unit
-
-# Run unit tests in CI mode
-yarn test:unit:ci
 ```
+
+---
 
 ## 📁 Project Structure
 
 ```
 playwright-e2e-realworld-app/
-├── playwright/              # 🔥 Playwright test suite
-│   ├── tests/              # Test specifications
-│   │   ├── auth/          # Authentication tests
-│   │   ├── checkout/      # Checkout/transaction tests
-│   │   └── smoke.spec.ts # Smoke tests
-│   ├── pages/             # Page Object Model (POM)
-│   │   ├── base.page.ts
-│   │   ├── login.page.ts
-│   │   └── dashboard.page.ts
-│   ├── fixtures/          # Custom fixtures
-│   ├── helpers/           # Utilities & helpers
-│   ├── config/            # Environment configs
-│   ├── test-data/         # JSON test data
-│   ├── global-setup.ts
-│   ├── global-teardown.ts
-│   └── playwright.config.ts
 │
-├── src/                  # React application source
-│   ├── components/       # Reusable components
-│   ├── containers/       # Container components
-│   ├── machines/         # XState machines
-│   ├── models/           # Data models
-│   ├── utils/           # Utility functions
-│   ├── svgs/            # SVG icons
-│   └── index.tsx        # Entry point
+├── playwright/                 # 🎭 Playwright test suite (see above)
 │
-├── backend/              # Express API server
+├── .github/workflows/
+│   ├── playwright-ci.yml       # Dev branch CI
+│   ├── pr-validation.yml       # PR gate (lint → build → E2E → deploy)
+│   └── production-deploy.yml   # Production health check post-deploy
+│
+├── src/                        # React application source
+│   ├── components/
+│   ├── containers/
+│   ├── machines/               # XState state machines
+│   ├── models/
+│   └── utils/
+│
+├── backend/                    # Express API server
 │   ├── app.ts
-│   ├── auth.ts
 │   ├── database.ts
-│   ├── graphql/          # GraphQL schema & resolvers
-│   └── *-routes.ts       # API route handlers
+│   ├── graphql/
+│   └── *-routes.ts
 │
-├── data/                # Database files
+├── data/                       # Seed data
 │   ├── database.json
-│   ├── database-seed.json
-│   └── empty-seed.json
+│   └── database-seed.json
 │
-├── public/              # Static assets
-│   ├── index.html
-│   ├── favicon.ico
-│   └── img/
-│
-├── scripts/             # Utility scripts
-│   ├── generateSeedData.ts
-│   └── testServer.ts
-│
-├── build/              # Production build output
-├── netlify.toml        # Netlify configuration
-├── vite.config.ts       # Vite configuration
-└── package.json         # Project dependencies
+├── scripts/                    # Utility scripts
+├── netlify.toml                # Netlify config
+├── vite.config.ts
+└── package.json
 ```
-
-## 🎭 Playwright Testing
-
-### Directory Structure
-
-The Playwright test suite is organized using best practices:
-
-```
-playwright/
-├── tests/                   # Test specifications
-│   ├── auth/               # Authentication tests
-│   ├── checkout/           # Checkout/transaction tests
-│   └── smoke.spec.ts       # Smoke tests
-│
-├── pages/                  # Page Object Model (POM)
-│   ├── base.page.ts        # Base page with common methods
-│   ├── login.page.ts       # Login page object
-│   └── dashboard.page.ts   # Dashboard page object
-│
-├── fixtures/               # Custom fixtures
-│   └── auth.fixture.ts     # Authentication fixture
-│
-├── helpers/               # Utilities & helpers
-│   ├── test-data.ts        # Test data objects
-│   ├── api.helper.ts       # API helper class
-│   └── wait.helper.ts      # Wait/synchronization helpers
-│
-├── config/                # Environment configurations
-│   ├── env.dev.ts          # Development environment config
-│   ├── env.staging.ts      # Staging environment config
-│   └── env.prod.ts         # Production environment config
-│
-├── test-data/             # JSON / static test data
-│   └── users.json          # User test data
-│
-├── global-setup.ts        # Global setup script
-├── global-teardown.ts     # Global teardown script
-└── playwright.config.ts    # Playwright configuration
-```
-
-### Running Playwright Tests
-
-```bash
-# Run all tests
-yarn test
-
-# Run in UI mode
-yarn test:playwright:ui
-
-# Run headless
-yarn test:headless
-```
-
-### Test Patterns
-
-- **Page Object Model (POM)**: Organized page objects for maintainable tests
-- **Fixtures**: Reusable setup code for authentication and common operations
-- **Helpers**: Utility classes for API calls, waiting strategies, and test data
-- **Environment Configs**: Separate configurations for dev, staging, and production
-
-## 🌐 Deployment
-
-### Netlify
-
-The application is automatically deployed to Netlify when pushing to the `main` branch.
-
-**Live URL:** https://playwright-e2e-realworld-app.netlify.app
-
-### Manual Deployment
-
-```bash
-# Build the project
-yarn build
-
-# Deploy to Netlify (requires Netlify CLI)
-netlify deploy --prod --dir=build
-```
-
-### Environment Variables
-
-Set up these environment variables in Netlify or your local `.env` file:
-
-```env
-NODE_ENV=production
-VITE_AUTH0=true          # Optional: Enable Auth0
-VITE_OKTA=true            # Optional: Enable Okta
-VITE_AWS_COGNITO=true   # Optional: Enable AWS Cognito
-VITE_GOOGLE=true         # Optional: Enable Google Auth
-```
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-
-- Follow the existing code style
-- Write tests for new features
-- Update documentation as needed
-- Run tests before committing (`yarn types` and `yarn test`)
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 🙏 Acknowledgments
-
-This project is based on the [Cypress Real World App](https://github.com/cypress-io/cypress-realworld-app) and adapted to use Playwright for E2E testing.
-
-## 📚 Additional Resources
-
-- [Playwright Documentation](https://playwright.dev/)
-- [React Documentation](https://react.dev/)
-- [Material-UI Documentation](https://mui.com/)
-- [Vite Documentation](https://vitejs.dev/)
-- [XState Documentation](https://xstate.js.org/docs/)
-
-## 📧 Support
-
-For issues and questions:
-
-- GitHub Issues: [Open an Issue](https://github.com/imransdet/playwright-e2e-realworld-app/issues)
-- Email: support@example.com
 
 ---
 
-**Built with ❤️ using Playwright and React**
+## 🙏 Acknowledgments
+
+Built on top of the [Cypress Real World App](https://github.com/cypress-io/cypress-realworld-app) — adapted to replace Cypress with Playwright and demonstrate modern E2E automation patterns.
+
+---
+
+## 📧 Support
+
+- GitHub Issues: [Open an Issue](https://github.com/imransdet/playwright-e2e-realworld-app/issues)
+
+---
+
+**Built with Playwright · React · GitHub Actions**
