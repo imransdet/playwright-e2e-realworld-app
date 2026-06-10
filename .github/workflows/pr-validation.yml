@@ -107,9 +107,21 @@ jobs:
           echo "url=$PREVIEW_URL" >> $GITHUB_OUTPUT
           echo "Preview URL: $PREVIEW_URL"
 
+      - name: Check Netlify credentials
+        id: netlify-creds
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          if [ -n "$NETLIFY_AUTH_TOKEN" ] && [ -n "$NETLIFY_SITE_ID" ]; then
+            echo "configured=true" >> $GITHUB_OUTPUT
+          else
+            echo "configured=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Deploy to Netlify via CLI
         id: netlify-deploy
-        if: ${{ secrets.NETLIFY_AUTH_TOKEN != '' && secrets.NETLIFY_SITE_ID != '' }}
+        if: steps.netlify-creds.outputs.configured == 'true'
         uses: nwtgck/actions-netlify@v3
         with:
           publish-dir: "./build"
@@ -127,7 +139,7 @@ jobs:
 
       - name: Wait for Netlify auto-deploy
         id: wait-netlify
-        if: ${{ secrets.NETLIFY_AUTH_TOKEN == '' || secrets.NETLIFY_SITE_ID == '' }}
+        if: steps.netlify-creds.outputs.configured == 'false'
         run: |
           PREVIEW_URL="${{ steps.preview-url.outputs.url }}"
           echo "Waiting for Netlify auto-deploy preview..."
