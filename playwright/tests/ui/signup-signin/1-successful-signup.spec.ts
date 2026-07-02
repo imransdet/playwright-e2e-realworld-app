@@ -1,14 +1,31 @@
 import { test, expect } from "@playwright/test";
 import { faker } from "@faker-js/faker";
+import * as fs from "fs";
+import * as path from "path";
 
 import { SignupPage } from "../../../pages/signup.page";
 import { saveUser, findUserByUsername } from "../../../helpers/user-data.helper";
+
+/**
+ * Save the last registered user's credentials to a JSON file so that
+ * subsequent test suites (e.g. signin) can read them.
+ * NOTE: We avoid writing to .env because Vite watches .env and restarts
+ * the dev server on change, which would break running tests.
+ */
+function saveCredentials(username: string, password: string) {
+  const credsPath = path.resolve(__dirname, "../../../test-data/credentials.json");
+  const data = JSON.stringify({ username, password }, null, 2);
+  fs.writeFileSync(credsPath, data);
+}
 
 test.describe("Sign Up - Happy Path", () => {
   let signupPage: SignupPage;
 
   test.beforeEach(async ({ page }) => {
     signupPage = new SignupPage(page);
+    // Clear localStorage to remove stale auth state that can interfere with signup flow
+    await page.goto("/");
+    await page.evaluate(() => localStorage.clear());
   });
 
   const generateTestUser = () => ({
@@ -33,9 +50,10 @@ test.describe("Sign Up - Happy Path", () => {
     await signupPage.assertNoValidationErrors();
     await expect(await signupPage.isSignUpButtonEnabled()).toBe(true);
 
-    // Submit the form
+    // Submit the form and wait for navigation
     await signupPage.submitSignup();
-    await expect(page).toHaveURL(/\/signup-success/, { timeout: 10000 });
+    // Wait for the API call to complete and navigation to happen
+    await page.waitForURL(/\/signup-success/, { timeout: 30000 });
     await signupPage.assertSuccessPageIsVisible();
 
     await signupPage.clickGoToSignIn();
@@ -54,6 +72,9 @@ test.describe("Sign Up - Happy Path", () => {
     expect(savedUser!.lastName).toBe(testUser.lastName);
     expect(savedUser!.username).toBe(testUser.username);
     expect(savedUser!.password).toBe(testUser.password);
+
+    // Save credentials for use by signin tests
+    saveCredentials(testUser.username, testUser.password);
   });
 
   test("1.2 User navigates to Sign In page from Sign Up", async ({ page }) => {

@@ -1,6 +1,19 @@
 import * as fs from "fs";
 import * as path from "path";
 
+export interface SeedUser {
+  username: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+}
+
+const SEED_USER_FILE = path.join(__dirname, "../test-data/seed-user.json");
+
+export function getSeedUser(): SeedUser {
+  return JSON.parse(fs.readFileSync(SEED_USER_FILE, "utf-8"));
+}
+
 export interface TestUser {
   firstName: string;
   lastName: string;
