@@ -33,3 +33,11 @@ export function findUserByUsername(username: string): TestUser | undefined {
   const users = loadUsers();
   return users.find((u) => u.username === username);
 }
+
+export function getLastUser(): TestUser {
+  const users = loadUsers();
+  if (users.length === 0) {
+    throw new Error("No users found in test-data/users.json — run signup tests first");
+  }
+  return users[users.length - 1];
+}
