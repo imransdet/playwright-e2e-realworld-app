@@ -45,6 +45,7 @@ amplifytools.xcconfig
 # Playwright generated artifacts
 playwright-report/
 test-results/
+playwright/.env
 
 # Yarn
 # See https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
